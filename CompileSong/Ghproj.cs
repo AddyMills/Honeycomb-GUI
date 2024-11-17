@@ -211,6 +211,36 @@ namespace GH_Toolkit_GUI
             // Continue later
 
         }
+        private string GetRelativePath(string filePath, string projectFilePath)
+        {
+            // Get the directory of the project file
+            string projectDir = Path.GetDirectoryName(projectFilePath);
+
+            // Convert file paths to Uri for relative path calculation
+            Uri fileUri = new Uri(filePath);
+            Uri projectUri = new Uri(projectDir + Path.DirectorySeparatorChar); // Ensure it's treated as a directory
+
+            // Get the relative Uri
+            Uri relativeUri = projectUri.MakeRelativeUri(fileUri);
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString().Replace('/', Path.DirectorySeparatorChar));
+
+            // Split the relative path into directories
+            string[] relativeParts = relativePath.Split(Path.DirectorySeparatorChar);
+
+            // Count the number of ".." in the path to see how many levels it goes up
+            int upDirectoryCount = relativeParts.Count(part => part == "..");
+
+            // If it goes up more than one directory, return the full path, otherwise return the relative path
+            if (upDirectoryCount > 1)
+            {
+                return filePath;
+            }
+            else
+            {
+                return relativePath;
+            }
+        }
+
         private SaveData makeSaveClass()
         {
             var data = new SaveData
@@ -234,7 +264,7 @@ namespace GH_Toolkit_GUI
                 guitarPath = guitarInput.Text,
                 bassPath = bassInput.Text,
                 vocalsPath = vocalsInput.Text,
-                backingPaths = string.Join(";", backingInput.Items.Cast<string>().ToArray()),
+                backingPaths = string.Join(";", backingInput.Items.Cast<string>().Select(x => GetRelativePath(x, projectFilePath)).ToArray()),
                 crowdPath = crowdInput.Text,
                 previewAudioPath = previewInput.Text,
                 previewVolume = previewVolume.Value,
@@ -497,7 +527,7 @@ namespace GH_Toolkit_GUI
 
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                saveFileDialog.Filter = ghprojFileFilter; // Ensure this is defined somewhere in your code
+                saveFileDialog.Filter = ghprojFileFilter;
                 saveFileDialog.FilterIndex = 1;
                 saveFileDialog.RestoreDirectory = true;
 
