@@ -1,7 +1,8 @@
 {
   "profiles": {
     "GH-Toolkit-GUI": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\GH Modding\\Same Old Conversion\\Compile\\addy_sameoldcover.ghproj\""
     }
   }
 }

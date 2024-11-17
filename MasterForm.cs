@@ -54,6 +54,11 @@ namespace GH_Toolkit_GUI
             SongListManager songListManager = new SongListManager();
             songListManager.Show();
         }
+
+        private void toolStripLabel1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
     public class TextBoxStreamWriter : TextWriter
     {
