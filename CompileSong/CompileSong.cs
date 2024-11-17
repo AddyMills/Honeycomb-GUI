@@ -88,12 +88,15 @@ namespace GH_Toolkit_GUI
         private bool isProgrammaticChange = false;
         private bool isLoading = false;
         private bool isExport = false;
+        private bool isAudioCompile = false;
         private UserPreferences Pref = UserPreferences.Default;
         private List<QB.QBItem> SongList = new List<QB.QBItem>();
         private string[] QsStrings = [];
         private GhMetadata Metadata = new GhMetadata();
         private string PakFilePath = "";
         private TimeSpan Duration = new TimeSpan();
+
+        private bool RecoverGameSettings = false;
 
 
         public CompileSong(string ghproj = "")
@@ -225,6 +228,7 @@ namespace GH_Toolkit_GUI
             updatePreviewStartTime();
             updatePreviewEndTime();
             DisplayChecksum();
+            CheckSustainThreshold();
         }
         private void DefaultPaths()
         {
@@ -677,11 +681,34 @@ namespace GH_Toolkit_GUI
 
                     // Radio button is checked, update fields based on the selected game
                     SetGameFields();
+                    CheckSustainThreshold();
+
 
                     // Remember this radio button as the last one checked
                     lastCheckedRadioButton = radioButton;
 
 
+                }
+            }
+        }
+        private void CheckSustainThreshold()
+        {
+            if (CurrentGame == "GH3" || CurrentGame == "GHA")
+            {
+                return;
+            }
+            if (CurrentPlatform == "PC")
+            {
+                if (CurrentGame == "GHWT" && sustainThreshold.Value > 0.44m && sustainThreshold.Value < 0.46m)
+                {
+                    sustainThreshold.Value = 0.50m;
+                }
+            }
+            else
+            {
+                if (sustainThreshold.Value > 0.49m && sustainThreshold.Value < 0.51m)
+                {
+                    sustainThreshold.Value = 0.45m;
                 }
             }
         }
@@ -985,17 +1012,9 @@ namespace GH_Toolkit_GUI
         // Compiling Logic
         private void PreCompileCheck()
         {
-            if (compile_input.Text == "")
-            {
-                compile_input.Text = Path.GetDirectoryName(project_input.Text);
-            }
-            if (song_checksum.Text == "")
-            {
-                CreateChecksum();
-            }
-            ConsoleCompile = Path.Combine(compile_input.Text, "Console");
+            ConsoleStringCheck();
             string game = CurrentGame;
-            if (game == "GH3" || game == "GHA")
+            if ((game == "GH3" || game == "GHA") && CurrentPlatform == "PC")
             {
                 Gh3PcCheck(game);
             }
@@ -1028,6 +1047,18 @@ namespace GH_Toolkit_GUI
                 CreateConsoleFolder();
             }
 
+        }
+        private void ConsoleStringCheck()
+        {
+            if (compile_input.Text == "")
+            {
+                compile_input.Text = Path.GetDirectoryName(project_input.Text);
+            }
+            if (song_checksum.Text == "")
+            {
+                CreateChecksum();
+            }
+            ConsoleCompile = Path.Combine(compile_input.Text, "Console");
         }
         private void CreateConsoleFolder()
         {
@@ -1520,7 +1551,7 @@ namespace GH_Toolkit_GUI
             {
                 Metadata = PackageMetadata();
             }
-            
+
             Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
         }
         private async Task CompileGh3Audio()
@@ -1599,6 +1630,10 @@ namespace GH_Toolkit_GUI
                 {
                     File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
                     File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
+                }
+                else if (isAudioCompile)
+                {
+
                 }
                 else if (CurrentPlatform == "PC")
                 {
@@ -1708,7 +1743,7 @@ namespace GH_Toolkit_GUI
                 Console.WriteLine("Combining Audio...");
                 var fsbList = fsb.CombineFSB4File(drumFiles, otherFiles, backingFiles, [previewOutput], fsbOutput);
 
-                if (CurrentPlatform == "PC")
+                if (CurrentPlatform == "PC" && !isAudioCompile)
                 {
                     foreach (string file in fsbList)
                     {
@@ -1762,11 +1797,11 @@ namespace GH_Toolkit_GUI
             string skaPath = skaFilesInput.Text;
             if (!Directory.Exists(skaFilesInput.Text))
             {
-                skaFilesInput.Text = lipSyncPath+"-temp";
+                skaFilesInput.Text = lipSyncPath + "-temp";
                 skaPath = skaFilesInput.Text;
                 Directory.CreateDirectory(skaPath);
             }
-            
+
             if (Directory.Exists(lipSyncPath))
             {
 
@@ -1971,7 +2006,7 @@ namespace GH_Toolkit_GUI
                 {
                     throw new FileNotFoundException($"Missing audio file {audio} for download file creation.");
                 }
-                if (duration == 0) 
+                if (duration == 0)
                 {
                     var fileInfo = new FileInfo(audio);
                     var length = fileInfo.Length - 128; // Data starts at 128
@@ -2262,6 +2297,26 @@ namespace GH_Toolkit_GUI
             isExport = true;
             await CompileAll();
             isExport = false;
+        }
+
+        private async void compileAudioToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveProject();
+            ConsoleStringCheck();
+            isAudioCompile = true;
+            if (CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA)
+            {
+                await CompileGh3Audio();
+            }
+            else if (CurrentGame == GAME_GHWT)
+            {
+                await CompileGhwtAudio();
+            }
+            else
+            {
+                await CompileGhwtAudio(true);
+            }
+            isAudioCompile = false;
         }
     }
 }

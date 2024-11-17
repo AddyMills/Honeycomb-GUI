@@ -316,6 +316,7 @@
             compile_select = new Button();
             project_select = new Button();
             compile_input = new TextBox();
+            compileAudioToolStripMenuItem = new ToolStripMenuItem();
             compiler_tabs.SuspendLayout();
             metadata_tab.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -3721,7 +3722,7 @@
             // toolStripSplitButton1
             // 
             toolStripSplitButton1.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripSplitButton1.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem });
+            toolStripSplitButton1.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem, compileAudioToolStripMenuItem });
             toolStripSplitButton1.ImageTransparentColor = Color.Magenta;
             toolStripSplitButton1.Name = "toolStripSplitButton1";
             toolStripSplitButton1.Size = new Size(47, 22);
@@ -3730,7 +3731,7 @@
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(116, 22);
+            settingsToolStripMenuItem.Size = new Size(180, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
@@ -3814,6 +3815,13 @@
             compile_input.Name = "compile_input";
             compile_input.Size = new Size(419, 23);
             compile_input.TabIndex = 2;
+            // 
+            // compileAudioToolStripMenuItem
+            // 
+            compileAudioToolStripMenuItem.Name = "compileAudioToolStripMenuItem";
+            compileAudioToolStripMenuItem.Size = new Size(180, 22);
+            compileAudioToolStripMenuItem.Text = "Compile Audio";
+            compileAudioToolStripMenuItem.Click += compileAudioToolStripMenuItem_Click;
             // 
             // CompileSong
             // 
@@ -4208,5 +4216,6 @@
         private Label label72;
         private TextBox gh3SkaFilesInput;
         private Button gh3SkaFilesSelect;
+        private ToolStripMenuItem compileAudioToolStripMenuItem;
     }
 }
