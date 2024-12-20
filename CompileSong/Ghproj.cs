@@ -668,6 +668,10 @@ namespace GH_Toolkit_GUI
                     string json = JsonConvert.SerializeObject(data, settings);
                     File.WriteAllText(saveFileDialog.FileName, json); // Use the selected file name for saving
                 }
+                else
+                {
+                    throw new Exception("Save file creation cancelled by user.");
+                }
             }
         }
         private void LoadProject(string filePath)
