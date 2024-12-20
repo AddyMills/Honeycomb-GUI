@@ -652,6 +652,8 @@ namespace GH_Toolkit_GUI
                 saveFileDialog.Filter = ghprojFileFilter;
                 saveFileDialog.FilterIndex = 1;
                 saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.FileName = $"{song_checksum.Text}.ghproj";
+
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
