@@ -118,9 +118,9 @@ namespace GH_Toolkit_GUI
             [DefaultValue(-1)]
             public int worGenre { get; set; } = 0;
             [DefaultValue(30000)]
-            public int previewStart { get; set; } = 30000;
+            public int previewStart { get; set; }
             [DefaultValue(30000)]
-            public int previewEnd { get; set; } = 30000;
+            public int previewEnd { get; set; }
             [DefaultValue(170)]
             public int hmxHopoVal { get; set; } = 170;
             public int skaSourceGh3 { get; set; } = 0;
@@ -157,7 +157,7 @@ namespace GH_Toolkit_GUI
             public decimal vocalScrollSpeed { get; set; } = 1;
             public decimal vocalTuningCents { get; set; } = 0;
             [DefaultValue(0.5)]
-            public decimal sustainThreshold { get; set; } = 0.5m;
+            public decimal sustainThreshold { get; set; }
             public decimal overallVolume { get; set; } = 0;
             [DefaultValue(-7.0)]
             public decimal previewVolume { get; set; } = -7m;
@@ -211,12 +211,24 @@ namespace GH_Toolkit_GUI
             // Continue later
 
         }
-        private string GetRelativePath(string filePath, string projectFilePath)
+        private string GetRelativePath(string filePath)
         {
+            if (filePath == null || filePath == string.Empty)
+            {
+                return string.Empty;
+            }
             // Get the directory of the project file
             string projectDir = Path.GetDirectoryName(projectFilePath);
 
-            // Convert file paths to Uri for relative path calculation
+            // Check if the file path is relative and make it absolute if needed
+            if (!Path.IsPathRooted(filePath))
+            {
+                filePath = Path.Combine(projectDir, filePath);
+            }
+
+            filePath = Path.GetFullPath(filePath);
+
+            // Convert the absolute file path to a Uri
             Uri fileUri = new Uri(filePath);
             Uri projectUri = new Uri(projectDir + Path.DirectorySeparatorChar); // Ensure it's treated as a directory
 
@@ -231,14 +243,124 @@ namespace GH_Toolkit_GUI
             int upDirectoryCount = relativeParts.Count(part => part == "..");
 
             // If it goes up more than one directory, return the full path, otherwise return the relative path
-            if (upDirectoryCount > 1)
+            return upDirectoryCount <= 1 ? relativePath : filePath;
+        }
+
+        private string GetAbsolutePath(string filePath)
+        {
+            if (filePath == null || filePath == string.Empty)
             {
-                return filePath;
+                return string.Empty;
             }
-            else
+
+            // Get the directory of the project file
+            string projectDir = Path.GetDirectoryName(projectFilePath);
+
+            // Check if the file path is relative and make it absolute if needed
+            if (!Path.IsPathRooted(filePath))
             {
-                return relativePath;
+                filePath = Path.Combine(projectDir, filePath);
             }
+
+            return Path.GetFullPath(filePath);
+        }
+        private void SetAllToAbsolute()
+        {
+            if (projectFilePath == null || projectFilePath == string.Empty)
+            {
+                return;
+            }
+            // GHWT
+            kickInput.Text = GetAbsolutePath(kickInput.Text);
+            snareInput.Text = GetAbsolutePath(snareInput.Text);
+            cymbalsInput.Text = GetAbsolutePath(cymbalsInput.Text);
+            tomsInput.Text = GetAbsolutePath(tomsInput.Text);
+            guitarInput.Text = GetAbsolutePath(guitarInput.Text);
+            bassInput.Text = GetAbsolutePath(bassInput.Text);
+            vocalsInput.Text = GetAbsolutePath(vocalsInput.Text);
+            for (int i = 0; i < backingInput.Items.Count; i++)
+            {
+                backingInput.Items[i] = GetAbsolutePath(backingInput.Items[i].ToString());
+            }
+            crowdInput.Text = GetAbsolutePath(crowdInput.Text);
+            previewInput.Text = GetAbsolutePath(previewInput.Text);
+
+
+            // MIDI
+            midiFileInput.Text = GetAbsolutePath(midiFileInput.Text);
+            perfOverrideInput.Text = GetAbsolutePath(perfOverrideInput.Text);
+            skaFilesInput.Text = GetAbsolutePath(skaFilesInput.Text);
+            songScriptInput.Text = GetAbsolutePath(songScriptInput.Text);
+            gh3SkaFilesInput.Text = GetAbsolutePath(gh3SkaFilesInput.Text);
+
+            // GH3
+            guitar_input_gh3.Text = GetAbsolutePath(guitar_input_gh3.Text);
+            rhythm_input_gh3.Text = GetAbsolutePath(rhythm_input_gh3.Text);
+            for (int i = 0; i < backing_input_gh3.Items.Count; i++)
+            {
+                backing_input_gh3.Items[i] = GetAbsolutePath(backing_input_gh3.Items[i].ToString());
+            }
+            coop_guitar_input_gh3.Text = GetAbsolutePath(coop_guitar_input_gh3.Text);
+            coop_rhythm_input_gh3.Text = GetAbsolutePath(coop_rhythm_input_gh3.Text);
+            for (int i = 0; i < coop_backing_input_gh3.Items.Count; i++)
+            {
+                coop_backing_input_gh3.Items[i] = GetAbsolutePath(coop_backing_input_gh3.Items[i].ToString());
+            }
+            crowd_input_gh3.Text = GetAbsolutePath(crowd_input_gh3.Text);
+            preview_audio_input_gh3.Text = GetAbsolutePath(preview_audio_input_gh3.Text);
+            midi_file_input_gh3.Text = GetAbsolutePath(midi_file_input_gh3.Text);
+            perf_override_input_gh3.Text = GetAbsolutePath(perf_override_input_gh3.Text);
+            ska_files_input_gh3.Text = GetAbsolutePath(ska_files_input_gh3.Text);
+            song_script_input_gh3.Text = GetAbsolutePath(song_script_input_gh3.Text);
+        }
+
+        private void SetAllToRelative()
+        {
+            if (projectFilePath == null || projectFilePath == string.Empty)
+            {
+                return;
+            }
+            // GHWT
+            kickInput.Text = GetRelativePath(kickInput.Text);
+            snareInput.Text = GetRelativePath(snareInput.Text);
+            cymbalsInput.Text = GetRelativePath(cymbalsInput.Text);
+            tomsInput.Text = GetRelativePath(tomsInput.Text);
+            guitarInput.Text = GetRelativePath(guitarInput.Text);
+            bassInput.Text = GetRelativePath(bassInput.Text);
+            vocalsInput.Text = GetRelativePath(vocalsInput.Text);
+            for (int i = 0; i < backingInput.Items.Count; i++)
+            {
+                backingInput.Items[i] = GetRelativePath(backingInput.Items[i].ToString());
+            }
+            crowdInput.Text = GetRelativePath(crowdInput.Text);
+            previewInput.Text = GetRelativePath(previewInput.Text);
+
+            // MIDI
+            midiFileInput.Text = GetRelativePath(midiFileInput.Text);
+            perfOverrideInput.Text = GetRelativePath(perfOverrideInput.Text);
+            skaFilesInput.Text = GetRelativePath(skaFilesInput.Text);
+            songScriptInput.Text = GetRelativePath(songScriptInput.Text);
+            gh3SkaFilesInput.Text = GetRelativePath(gh3SkaFilesInput.Text);
+
+            // GH3
+            guitar_input_gh3.Text = GetRelativePath(guitar_input_gh3.Text);
+            rhythm_input_gh3.Text = GetRelativePath(rhythm_input_gh3.Text);
+            for (int i = 0; i < backing_input_gh3.Items.Count; i++)
+            {
+                backing_input_gh3.Items[i] = GetRelativePath(backing_input_gh3.Items[i].ToString());
+            }
+            coop_guitar_input_gh3.Text = GetRelativePath(coop_guitar_input_gh3.Text);
+            coop_rhythm_input_gh3.Text = GetRelativePath(coop_rhythm_input_gh3.Text);
+            for (int i = 0; i < coop_backing_input_gh3.Items.Count; i++)
+            {
+                coop_backing_input_gh3.Items[i] = GetRelativePath(coop_backing_input_gh3.Items[i].ToString());
+            }
+            crowd_input_gh3.Text = GetRelativePath(crowd_input_gh3.Text);
+            preview_audio_input_gh3.Text = GetRelativePath(preview_audio_input_gh3.Text);
+            midi_file_input_gh3.Text = GetRelativePath(midi_file_input_gh3.Text);
+            perf_override_input_gh3.Text = GetRelativePath(perf_override_input_gh3.Text);
+            ska_files_input_gh3.Text = GetRelativePath(ska_files_input_gh3.Text);
+            song_script_input_gh3.Text = GetRelativePath(song_script_input_gh3.Text);
         }
 
         private SaveData makeSaveClass()
@@ -257,25 +379,25 @@ namespace GH_Toolkit_GUI
 
                 // GHWT
                 // Audio
-                kickPath = kickInput.Text,
-                snarePath = snareInput.Text,
-                cymbalsPath = cymbalsInput.Text,
-                tomsPath = tomsInput.Text,
-                guitarPath = guitarInput.Text,
-                bassPath = bassInput.Text,
-                vocalsPath = vocalsInput.Text,
-                backingPaths = string.Join(";", backingInput.Items.Cast<string>().Select(x => GetRelativePath(x, projectFilePath)).ToArray()),
-                crowdPath = crowdInput.Text,
-                previewAudioPath = previewInput.Text,
+                kickPath = GetRelativePath(kickInput.Text),
+                snarePath = GetRelativePath(snareInput.Text),
+                cymbalsPath = GetRelativePath(cymbalsInput.Text),
+                tomsPath = GetRelativePath(tomsInput.Text),
+                guitarPath = GetRelativePath(guitarInput.Text),
+                bassPath = GetRelativePath(bassInput.Text),
+                vocalsPath = GetRelativePath(vocalsInput.Text),
+                backingPaths = string.Join(";", backingInput.Items.Cast<string>().Select(GetRelativePath).ToArray()),
+                crowdPath = GetRelativePath(crowdInput.Text),
+                previewAudioPath = GetRelativePath(previewInput.Text),
                 previewVolume = previewVolume.Value,
                 useRenderedPreview = renderedPreviewCheck.Checked,
                 // Song Data
-                midiPath = midiFileInput.Text,
+                midiPath = GetRelativePath(midiFileInput.Text),
                 easyOpen = easyOpenCheckbox.Checked,
-                perfPath = perfOverrideInput.Text,
-                skaPath = skaFilesInput.Text,
-                lipsyncPath = gh3SkaFilesInput.Text,
-                songScriptPath = songScriptInput.Text,
+                perfPath = GetRelativePath(perfOverrideInput.Text),
+                skaPath = GetRelativePath(skaFilesInput.Text),
+                lipsyncPath = GetRelativePath(gh3SkaFilesInput.Text),
+                songScriptPath = GetRelativePath(songScriptInput.Text),
                 skaSource = skaFileSource.SelectedIndex,
                 venueSource = venueSource.SelectedIndex,
                 countoff = countoffSelect.SelectedIndex,
@@ -309,14 +431,14 @@ namespace GH_Toolkit_GUI
 
                 // GH3
                 // Audio
-                guitarPathGh3 = guitar_input_gh3.Text,
-                rhythmPathGh3 = rhythm_input_gh3.Text,
-                backingPathsGh3 = string.Join(";", backing_input_gh3.Items.Cast<string>().ToArray()),
-                coopGuitarPath = coop_guitar_input_gh3.Text,
-                coopRhythmPath = coop_rhythm_input_gh3.Text,
-                coopBackingPaths = string.Join(";", coop_backing_input_gh3.Items.Cast<string>().ToArray()),
-                crowdPathGh3 = crowd_input_gh3.Text,
-                previewAudioPathGh3 = preview_audio_input_gh3.Text,
+                guitarPathGh3 = GetRelativePath(guitar_input_gh3.Text),
+                rhythmPathGh3 = GetRelativePath(rhythm_input_gh3.Text),
+                backingPathsGh3 = string.Join(";", backing_input_gh3.Items.Cast<string>().Select(GetRelativePath).ToArray()),
+                coopGuitarPath = GetRelativePath(coop_guitar_input_gh3.Text),
+                coopRhythmPath = GetRelativePath(coop_rhythm_input_gh3.Text),
+                coopBackingPaths = string.Join(";", coop_backing_input_gh3.Items.Cast<string>().Select(GetRelativePath).ToArray()),
+                crowdPathGh3 = GetRelativePath(crowd_input_gh3.Text),
+                previewAudioPathGh3 = GetRelativePath(preview_audio_input_gh3.Text),
                 gtrVolumeGh3 = gh3_gtr_vol.Value,
                 bandVolumeGh3 = gh3_band_vol.Value,
                 previewVolumeGh3 = previewVolumeGh3.Value,
@@ -555,6 +677,7 @@ namespace GH_Toolkit_GUI
                 isLoading = true;
                 string json = File.ReadAllText(filePath);
                 SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
+                projectFilePath = filePath;
 
                 LoadSaveData(data);
                 isLoading = false;
@@ -594,221 +717,79 @@ namespace GH_Toolkit_GUI
                         GetDataFromSongIni(ini, songData);
                     }
                 }
-                else if (Regex.IsMatch(file, audioRegex))
-                {
-                    string fileNoExt = Path.GetFileNameWithoutExtension(file);
-                    // GH3 filepaths
-                    switch (fileNoExt)
-                    {
-                        case "guitar":
-                            if (backing_input_gh3.Items.Count != 0)
-                            {
-                                guitar_input_gh3.Text = file;
-                            }
-                            else
-                            {
-                                backing_input_gh3.Items.Add(file);
-                            }
-                            break;
-                        case "rhythm":
-                            if (rhythm_input_gh3.Text != string.Empty)
-                            {
-                                backing_input_gh3.Items.Add(file);
-                            }
-                            else
-                            {
-                                rhythm_input_gh3.Text = file;
-                            }
-                            break;
-                        case "bass":
-                            if (rhythm_input_gh3.Text != string.Empty)
-                            {
-                                backing_input_gh3.Items.Add(rhythm_input_gh3.Text);
-                            }
-                            rhythm_input_gh3.Text = file;
-                            break;
-                        case "crowd":
-                            crowd_input_gh3.Text = file;
-                            break;
-                        case "preview":
-                            gh3_rendered_preview_check.Checked = true;
-                            preview_audio_input_gh3.Text = file;
-                            break;
-                        case "song":
-                            bool removeGtr = false;
-                            if (backing_input_gh3.Items.Count != 0)
-                            {
-                                foreach (string gtrCheck in backing_input_gh3.Items)
-                                {
-                                    if (gtrCheck.ToLower().Contains("guitar"))
-                                    {
-                                        guitar_input_gh3.Text = gtrCheck;
-                                        removeGtr = true;
-                                    }
-                                }
-                                if (removeGtr)
-                                {
-                                    backing_input_gh3.Items.Remove(guitar_input_gh3.Text);
-                                }
-                            }
-                            backing_input_gh3.Items.Add(file);
-                            break;
-                        default:
-                            backing_input_gh3.Items.Add(file);
-                            break;
-                    }
-                    // Modern GH filepaths
-                    switch (fileNoExt)
-                    {
-                        case "drums_1":
-                            kickInput.Text = file;
-                            break;
-                        case "drums_2":
-                            snareInput.Text = file;
-                            break;
-                        case "drums_3":
-                            tomsInput.Text = file;
-                            break;
-                        case "drums_4":
-                            cymbalsInput.Text = file;
-                            break;
-                        case "guitar":
-                            if (backingInput.Items.Count != 0)
-                            {
-                                guitarInput.Text = file;
-                            }
-                            else
-                            {
-                                backingInput.Items.Add(file);
-                            }
-                            break;
-                        case "bass":
-                            if (bassInput.Text != string.Empty)
-                            {
-                                backingInput.Items.Add(bassInput.Text);
-                            }
-                            bassInput.Text = file;
-                            break;
-                        case "rhythm":
-                            if (bassInput.Text != string.Empty)
-                            {
-                                backingInput.Items.Add(file);
-                            }
-                            else
-                            {
-                                bassInput.Text = file;
-                            }
-                            break;
-                        case "vocals":
-                            vocalsInput.Text = file;
-                            break;
-                        case "crowd":
-                            crowdInput.Text = file;
-                            break;
-                        case "song":
-                            bool removeGtr = false;
-                            if (backingInput.Items.Count != 0)
-                            {
-                                foreach (string gtrCheck in backingInput.Items)
-                                {
-                                    if (gtrCheck.ToLower().Contains("guitar"))
-                                    {
-                                        guitarInput.Text = gtrCheck;
-                                        removeGtr = true;
-                                    }
-                                }
-                                if (removeGtr)
-                                {
-                                    backingInput.Items.Remove(guitarInput.Text);
-                                }
-                            }
-                            backingInput.Items.Add(file);
-                            break;
-                        case "preview":
-                            renderedPreviewCheck.Checked = true;
-                            previewInput.Text = file;
-                            break;
-                        default:
-                            backingInput.Items.Add(file);
-                            break;
-                    }
-                }
                 else if (Regex.IsMatch(file, midiRegexCh))
                 {
                     midi_file_input_gh3.Text = file;
                     midiFileInput.Text = file;
                 }
             }
+            var assignment = iniParser.AssignFiles(folderPath, "GH3");
+            // Update GH3-specific UI
+            guitar_input_gh3.Text = assignment.Guitar ?? guitar_input_gh3.Text;
+            rhythm_input_gh3.Text = assignment.Rhythm ?? rhythm_input_gh3.Text;
+            crowd_input_gh3.Text = assignment.Crowd ?? crowd_input_gh3.Text;
+            preview_audio_input_gh3.Text = assignment.Preview ?? preview_audio_input_gh3.Text;
+            backing_input_gh3.Items.Clear();
+            backing_input_gh3.Items.AddRange(assignment.BackingTracks.ToArray());
+            gh3_rendered_preview_check.Checked = assignment.RenderedPreview;
+
+
+            assignment = iniParser.AssignFiles(folderPath, "GHWT");
+            // Update modern GH-specific UI
+            kickInput.Text = assignment.KickDrum ?? kickInput.Text;
+            snareInput.Text = assignment.SnareDrum ?? snareInput.Text;
+            tomsInput.Text = assignment.Toms ?? tomsInput.Text;
+            cymbalsInput.Text = assignment.Cymbals ?? cymbalsInput.Text;
+            guitarInput.Text = assignment.Guitar ?? guitarInput.Text;
+            bassInput.Text = assignment.Bass ?? bassInput.Text;
+            vocalsInput.Text = assignment.Vocals ?? vocalsInput.Text;
+            crowdInput.Text = assignment.Crowd ?? crowdInput.Text;
+            previewInput.Text = assignment.Preview ?? previewInput.Text;
+            backingInput.Items.Clear();
+            backingInput.Items.AddRange(assignment.BackingTracks.ToArray());
+            renderedPreviewCheck.Checked = assignment.RenderedPreview;
+
             UpdatePreviewFields();
             isProgrammaticChange = false;
             SetAll();
         }
         private void GetDataFromSongIni(IniData ini, string iniSection)
         {
-            foreach (var key in ini[iniSection])
-            {
-                switch (key.KeyName)
-                {
-                    case "name":
-                        title_input.Text = key.Value;
-                        break;
-                    case "artist":
-                        artist_input.Text = key.Value;
-                        break;
-                    case "charter":
-                        chart_author_input.Text = key.Value;
-                        break;
-                    case "frets":
-                        if (chart_author_input.Text == string.Empty)
-                        {
-                            chart_author_input.Text = key.Value;
-                        }
-                        break;
-                    case "checksum":
-                        song_checksum.Text = key.Value;
-                        break;
-                    case "year":
-                        year_input.Value = int.Parse(key.Value);
-                        break;
-                    case "diff_band":
-                        bandTierValue.Value = ChDiffToGh(key.Value);
-                        break;
-                    case "diff_guitar":
-                        guitarTierValue.Value = ChDiffToGh(key.Value);
-                        break;
-                    case "diff_bass":
-                        bassTierValue.Value = ChDiffToGh(key.Value);
-                        break;
-                    case "diff_drums":
-                        drumsTierValue.Value = ChDiffToGh(key.Value);
-                        break;
-                    case "diff_vocals":
-                        vocalsTierValue.Value = ChDiffToGh(key.Value);
-                        break;
-                    case "sustain_cutoff_threshold":
-                        sustainThreshold.Value = decimal.Parse(key.Value) / 480;
-                        break;
-                    case "hopo_frequency":
-                        HmxHopoVal.Value = int.Parse(key.Value);
-                        break;
-                    case "preview_start_time":
-                        previewStartTime = int.Parse(key.Value);
-                        break;
-                    case "preview_end_time":
-                        previewEndTime = int.Parse(key.Value);
-                        break;
-                }
-            }
+            var songData = iniParser.ParseSongIni(ini, iniSection);
+
+            title_input.Text = songData.Title ?? string.Empty;
+            artist_input.Text = songData.Artist ?? string.Empty;
+            chart_author_input.Text = songData.Charter ?? string.Empty;
+            song_checksum.Text = songData.Checksum ?? string.Empty;
+
+            if (songData.Year.HasValue)
+                year_input.Value = songData.Year.Value;
+
+            if (songData.BandTier.HasValue)
+                bandTierValue.Value = songData.BandTier.Value;
+
+            if (songData.GuitarTier.HasValue)
+                guitarTierValue.Value = songData.GuitarTier.Value;
+
+            if (songData.BassTier.HasValue)
+                bassTierValue.Value = songData.BassTier.Value;
+
+            if (songData.DrumsTier.HasValue)
+                drumsTierValue.Value = songData.DrumsTier.Value;
+
+            if (songData.VocalsTier.HasValue)
+                vocalsTierValue.Value = songData.VocalsTier.Value;
+
+            if (songData.SustainCutoffThreshold.HasValue)
+                sustainThreshold.Value = songData.SustainCutoffThreshold.Value;
+
+            if (songData.HopoFrequency.HasValue)
+                HmxHopoVal.Value = songData.HopoFrequency.Value;
+
+            previewStartTime = songData.PreviewStartTime ?? 30000;
+            previewEndTime = songData.PreviewEndTime ?? 60000;
+
         }
-        private int ChDiffToGh(string chDiff)
-        {
-            int chParsed = int.Parse(chDiff)+1;
-            if (chParsed <= 0)
-            {
-                return 0;
-            }
-            int ghDiff = (int)Math.Round(chParsed * 10f / 7f);
-            return Math.Clamp(ghDiff, 1, 10);
-        }
+
     }
 }

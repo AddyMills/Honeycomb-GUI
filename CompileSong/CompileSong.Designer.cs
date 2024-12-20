@@ -309,6 +309,7 @@
             exportSongArchiveToolStripMenuItem = new ToolStripMenuItem();
             toolStripSplitButton1 = new ToolStripDropDownButton();
             settingsToolStripMenuItem = new ToolStripMenuItem();
+            compileAudioToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel12 = new TableLayoutPanel();
             compile_label = new Label();
             project_file_label = new Label();
@@ -316,7 +317,6 @@
             compile_select = new Button();
             project_select = new Button();
             compile_input = new TextBox();
-            compileAudioToolStripMenuItem = new ToolStripMenuItem();
             compiler_tabs.SuspendLayout();
             metadata_tab.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -3731,9 +3731,16 @@
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(180, 22);
+            settingsToolStripMenuItem.Size = new Size(154, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
+            // 
+            // compileAudioToolStripMenuItem
+            // 
+            compileAudioToolStripMenuItem.Name = "compileAudioToolStripMenuItem";
+            compileAudioToolStripMenuItem.Size = new Size(154, 22);
+            compileAudioToolStripMenuItem.Text = "Compile Audio";
+            compileAudioToolStripMenuItem.Click += compileAudioToolStripMenuItem_Click;
             // 
             // tableLayoutPanel12
             // 
@@ -3815,13 +3822,6 @@
             compile_input.Name = "compile_input";
             compile_input.Size = new Size(419, 23);
             compile_input.TabIndex = 2;
-            // 
-            // compileAudioToolStripMenuItem
-            // 
-            compileAudioToolStripMenuItem.Name = "compileAudioToolStripMenuItem";
-            compileAudioToolStripMenuItem.Size = new Size(180, 22);
-            compileAudioToolStripMenuItem.Text = "Compile Audio";
-            compileAudioToolStripMenuItem.Click += compileAudioToolStripMenuItem_Click;
             // 
             // CompileSong
             // 

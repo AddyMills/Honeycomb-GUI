@@ -98,7 +98,6 @@ namespace GH_Toolkit_GUI
 
         private bool RecoverGameSettings = false;
 
-
         public CompileSong(string ghproj = "")
         {
             InitializeComponent();
@@ -922,6 +921,14 @@ namespace GH_Toolkit_GUI
         }
         private void UpdatePreviewFields()
         {
+            if (previewStartTime < 0)
+            {
+                previewStartTime = 0;
+            }
+            if (previewEndTime < 0)
+            {
+                previewEndTime = 0;
+            }
             preview_minutes_gh3.Value = previewStartTime / 60000;
             preview_seconds_gh3.Value = (previewStartTime % 60000) / 1000;
             preview_mills_gh3.Value = (previewStartTime % 60000) % 1000;
@@ -1699,7 +1706,9 @@ namespace GH_Toolkit_GUI
             try
             {
                 Console.WriteLine("Compiling Audio...");
-                string[] backingPaths = backingInput.Items.Cast<string>().ToArray();
+                //string[] backingPaths = backingInput.Items.Cast<string>().ToArray();
+                string[] backingPaths = backingInput.Items.Cast<string>()
+                    .ToArray();
 
                 FSB fsb = new FSB();
 
@@ -2028,8 +2037,9 @@ namespace GH_Toolkit_GUI
             var previewEncryptString = Path.GetFileNameWithoutExtension(previewPath);
             File.WriteAllBytes(previewSave, EncryptDecrypt.EncryptFSB4(File.ReadAllBytes(previewPath), previewEncryptString));
         }
-        private void compile_pak_button_Click(object sender, EventArgs e)
+        private async Task CompilePaksAsync()
         {
+            
             Console.WriteLine($"Compiling song for {CurrentGame}");
             SetConsoleChecksum();
             var time1 = DateTime.Now;
@@ -2072,11 +2082,20 @@ namespace GH_Toolkit_GUI
                 ShowPostCompile();
             }
         }
+        private async void compile_pak_button_Click(object sender, EventArgs e)
+        {
+            await TaskWithFilePathUpdates(CompilePaksAsync);
+        }
         private async void compile_all_button_Click(object sender, EventArgs e)
         {
-            await CompileAll();
+            await TaskWithFilePathUpdates(CompileAll);
         }
-
+        private async Task TaskWithFilePathUpdates(Func<Task> action)
+        {
+            SetAllToAbsolute();
+            await action();
+            SetAllToRelative();
+        }
         private void ShowPostCompile()
         {
             if (isExport)
@@ -2295,7 +2314,7 @@ namespace GH_Toolkit_GUI
                 return;
             }
             isExport = true;
-            await CompileAll();
+            await TaskWithFilePathUpdates(CompileAll);
             isExport = false;
         }
 
