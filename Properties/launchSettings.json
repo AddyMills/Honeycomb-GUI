@@ -1,8 +1,7 @@
 {
   "profiles": {
     "GH-Toolkit-GUI": {
-      "commandName": "Project",
-      "commandLineArgs": "\"D:\\RB\\Songs\\The Fall of Troy\\WTDE BS\\fall.ghproj\""
+      "commandName": "Project"
     }
   }
 }

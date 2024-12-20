@@ -683,7 +683,6 @@ namespace GH_Toolkit_GUI
                 isLoading = true;
                 string json = File.ReadAllText(filePath);
                 SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
-                projectFilePath = filePath;
 
                 LoadSaveData(data);
                 isLoading = false;

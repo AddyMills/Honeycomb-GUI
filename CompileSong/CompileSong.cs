@@ -219,7 +219,6 @@ namespace GH_Toolkit_GUI
             {
                 LoadProject(StartupProject);
             }
-
         }
         private void SetAll()
         {
