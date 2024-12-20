@@ -792,8 +792,8 @@ namespace GH_Toolkit_GUI
             if (songData.HopoFrequency.HasValue)
                 HmxHopoVal.Value = songData.HopoFrequency.Value;
 
-            previewStartTime = songData.PreviewStartTime ?? 30000;
-            previewEndTime = songData.PreviewEndTime ?? 60000;
+            previewStartTime = songData.PreviewStartTime ?? previewStartTime;
+            previewEndTime = songData.PreviewEndTime ?? previewEndTime;
 
         }
 
