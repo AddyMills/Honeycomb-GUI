@@ -219,6 +219,7 @@ namespace GH_Toolkit_GUI
             {
                 LoadProject(StartupProject);
             }
+
         }
         private void SetAll()
         {
@@ -1177,6 +1178,11 @@ namespace GH_Toolkit_GUI
                 QB.QBItem songItem = new QB.QBItem((string)songEntry["checksum"], songEntry);
                 var saveQb = Path.Combine(ConsoleCompile, "songs.info");
                 var bytes = QB.CompileQbFile([songItem], "songs.info", GAME_GH3, CONSOLE_XBOX);
+                if (bytes == null)
+                {
+                    Console.WriteLine("Failed to compile songs.info");
+                    return;
+                }
                 File.WriteAllBytes(saveQb, bytes);
             }
             else if (CurrentPlatform == "PC")
