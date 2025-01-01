@@ -39,6 +39,18 @@ namespace GH_Toolkit_GUI
             importSGHForm.Show();
         }
 
+        private void PakToolsForm()
+        {
+            PakTools pakToolsForm = new PakTools();
+            pakToolsForm.Show();
+        }
+
+        private void WadToolsForm()
+        {
+            WadTools wadToolsForm = new WadTools();
+            wadToolsForm.Show();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             OpenCompileSongForm();
@@ -58,6 +70,21 @@ namespace GH_Toolkit_GUI
         private void toolStripLabel1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void MasterForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pakToolsButton_Click(object sender, EventArgs e)
+        {
+            PakToolsForm();
+        }
+
+        private void wadExplorerButton_Click(object sender, EventArgs e)
+        {
+            WadToolsForm();
         }
     }
     public class TextBoxStreamWriter : TextWriter
