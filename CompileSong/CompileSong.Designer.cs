@@ -309,6 +309,7 @@
             exportSongArchiveToolStripMenuItem = new ToolStripMenuItem();
             toolStripSplitButton1 = new ToolStripDropDownButton();
             settingsToolStripMenuItem = new ToolStripMenuItem();
+            compileAudioToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel12 = new TableLayoutPanel();
             compile_label = new Label();
             project_file_label = new Label();
@@ -3721,7 +3722,7 @@
             // toolStripSplitButton1
             // 
             toolStripSplitButton1.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripSplitButton1.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem });
+            toolStripSplitButton1.DropDownItems.AddRange(new ToolStripItem[] { settingsToolStripMenuItem, compileAudioToolStripMenuItem });
             toolStripSplitButton1.ImageTransparentColor = Color.Magenta;
             toolStripSplitButton1.Name = "toolStripSplitButton1";
             toolStripSplitButton1.Size = new Size(47, 22);
@@ -3730,9 +3731,16 @@
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(116, 22);
+            settingsToolStripMenuItem.Size = new Size(154, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
+            // 
+            // compileAudioToolStripMenuItem
+            // 
+            compileAudioToolStripMenuItem.Name = "compileAudioToolStripMenuItem";
+            compileAudioToolStripMenuItem.Size = new Size(154, 22);
+            compileAudioToolStripMenuItem.Text = "Compile Audio";
+            compileAudioToolStripMenuItem.Click += compileAudioToolStripMenuItem_Click;
             // 
             // tableLayoutPanel12
             // 
@@ -4208,5 +4216,6 @@
         private Label label72;
         private TextBox gh3SkaFilesInput;
         private Button gh3SkaFilesSelect;
+        private ToolStripMenuItem compileAudioToolStripMenuItem;
     }
 }

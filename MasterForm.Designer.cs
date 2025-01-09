@@ -28,10 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MasterForm));
             toolStrip1 = new ToolStrip();
             FileButton = new ToolStripDropDownButton();
             button1 = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
+            wadExplorerButton = new Button();
+            pakToolsButton = new Button();
             importSGH = new Button();
             label1 = new Label();
             songlistManagerButton = new Button();
@@ -46,7 +49,7 @@
             toolStrip1.Items.AddRange(new ToolStripItem[] { FileButton });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(403, 25);
+            toolStrip1.Size = new Size(458, 25);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -66,7 +69,7 @@
             button1.Dock = DockStyle.Fill;
             button1.Location = new Point(3, 3);
             button1.Name = "button1";
-            button1.Size = new Size(375, 52);
+            button1.Size = new Size(430, 57);
             button1.TabIndex = 1;
             button1.Text = "Compile a Song";
             button1.UseVisualStyleBackColor = true;
@@ -74,30 +77,57 @@
             // 
             // tableLayoutPanel1
             // 
+            tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Controls.Add(wadExplorerButton, 0, 2);
+            tableLayoutPanel1.Controls.Add(pakToolsButton, 0, 1);
             tableLayoutPanel1.Controls.Add(button1, 0, 0);
-            tableLayoutPanel1.Controls.Add(importSGH, 0, 2);
-            tableLayoutPanel1.Controls.Add(label1, 0, 1);
-            tableLayoutPanel1.Controls.Add(songlistManagerButton, 0, 3);
+            tableLayoutPanel1.Controls.Add(importSGH, 0, 4);
+            tableLayoutPanel1.Controls.Add(label1, 0, 3);
+            tableLayoutPanel1.Controls.Add(songlistManagerButton, 0, 5);
             tableLayoutPanel1.Location = new Point(10, 22);
             tableLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 4;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel1.RowCount = 6;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20.0004959F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 19.9985046F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 15F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new Size(381, 190);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20.0005016F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20.0005016F));
+            tableLayoutPanel1.Size = new Size(436, 330);
             tableLayoutPanel1.TabIndex = 2;
+            // 
+            // wadExplorerButton
+            // 
+            wadExplorerButton.Dock = DockStyle.Fill;
+            wadExplorerButton.Location = new Point(3, 128);
+            wadExplorerButton.Name = "wadExplorerButton";
+            wadExplorerButton.Size = new Size(430, 56);
+            wadExplorerButton.TabIndex = 6;
+            wadExplorerButton.Text = "PS2 Archive Tools";
+            wadExplorerButton.UseVisualStyleBackColor = true;
+            wadExplorerButton.Click += wadExplorerButton_Click;
+            // 
+            // pakToolsButton
+            // 
+            pakToolsButton.Dock = DockStyle.Fill;
+            pakToolsButton.Location = new Point(3, 66);
+            pakToolsButton.Name = "pakToolsButton";
+            pakToolsButton.Size = new Size(430, 56);
+            pakToolsButton.TabIndex = 5;
+            pakToolsButton.Text = "PAK Tools";
+            pakToolsButton.UseVisualStyleBackColor = true;
+            pakToolsButton.Click += pakToolsButton_Click;
             // 
             // importSGH
             // 
             importSGH.Dock = DockStyle.Fill;
-            importSGH.Location = new Point(3, 75);
+            importSGH.Location = new Point(3, 204);
             importSGH.Margin = new Padding(3, 2, 3, 2);
             importSGH.Name = "importSGH";
-            importSGH.Size = new Size(375, 54);
+            importSGH.Size = new Size(430, 59);
             importSGH.TabIndex = 2;
             importSGH.Text = "Import SGH Archive";
             importSGH.UseVisualStyleBackColor = true;
@@ -107,9 +137,9 @@
             // 
             label1.AutoSize = true;
             label1.Dock = DockStyle.Fill;
-            label1.Location = new Point(3, 58);
+            label1.Location = new Point(3, 187);
             label1.Name = "label1";
-            label1.Size = new Size(375, 15);
+            label1.Size = new Size(430, 15);
             label1.TabIndex = 3;
             label1.Text = "Other Tools";
             label1.TextAlign = ContentAlignment.MiddleCenter;
@@ -118,9 +148,9 @@
             // 
             songlistManagerButton.AutoSize = true;
             songlistManagerButton.Dock = DockStyle.Fill;
-            songlistManagerButton.Location = new Point(3, 134);
+            songlistManagerButton.Location = new Point(3, 268);
             songlistManagerButton.Name = "songlistManagerButton";
-            songlistManagerButton.Size = new Size(375, 53);
+            songlistManagerButton.Size = new Size(430, 59);
             songlistManagerButton.TabIndex = 4;
             songlistManagerButton.Text = "PC Songlist Manager";
             songlistManagerButton.UseVisualStyleBackColor = true;
@@ -129,24 +159,26 @@
             // consoleOutput
             // 
             consoleOutput.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            consoleOutput.Location = new Point(10, 217);
+            consoleOutput.Location = new Point(10, 357);
             consoleOutput.Multiline = true;
             consoleOutput.Name = "consoleOutput";
             consoleOutput.ReadOnly = true;
             consoleOutput.ScrollBars = ScrollBars.Vertical;
-            consoleOutput.Size = new Size(381, 221);
+            consoleOutput.Size = new Size(436, 272);
             consoleOutput.TabIndex = 3;
             // 
             // MasterForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(403, 450);
+            ClientSize = new Size(458, 641);
             Controls.Add(consoleOutput);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(toolStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MasterForm";
             Text = "Guitar Hero Toolkit";
+            Load += MasterForm_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
@@ -165,5 +197,7 @@
         private TextBox consoleOutput;
         private Label label1;
         private Button songlistManagerButton;
+        private Button wadExplorerButton;
+        private Button pakToolsButton;
     }
 }

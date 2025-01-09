@@ -88,6 +88,7 @@ namespace GH_Toolkit_GUI
         private bool isProgrammaticChange = false;
         private bool isLoading = false;
         private bool isExport = false;
+        private bool isAudioCompile = false;
         private UserPreferences Pref = UserPreferences.Default;
         private List<QB.QBItem> SongList = new List<QB.QBItem>();
         private string[] QsStrings = [];
@@ -95,6 +96,7 @@ namespace GH_Toolkit_GUI
         private string PakFilePath = "";
         private TimeSpan Duration = new TimeSpan();
 
+        private bool RecoverGameSettings = false;
 
         public CompileSong(string ghproj = "")
         {
@@ -225,6 +227,7 @@ namespace GH_Toolkit_GUI
             updatePreviewStartTime();
             updatePreviewEndTime();
             DisplayChecksum();
+            CheckSustainThreshold();
         }
         private void DefaultPaths()
         {
@@ -677,11 +680,34 @@ namespace GH_Toolkit_GUI
 
                     // Radio button is checked, update fields based on the selected game
                     SetGameFields();
+                    CheckSustainThreshold();
+
 
                     // Remember this radio button as the last one checked
                     lastCheckedRadioButton = radioButton;
 
 
+                }
+            }
+        }
+        private void CheckSustainThreshold()
+        {
+            if (CurrentGame == "GH3" || CurrentGame == "GHA")
+            {
+                return;
+            }
+            if (CurrentPlatform == "PC")
+            {
+                if (CurrentGame == "GHWT" && sustainThreshold.Value > 0.44m && sustainThreshold.Value < 0.46m)
+                {
+                    sustainThreshold.Value = 0.50m;
+                }
+            }
+            else
+            {
+                if (sustainThreshold.Value > 0.49m && sustainThreshold.Value < 0.51m)
+                {
+                    sustainThreshold.Value = 0.45m;
                 }
             }
         }
@@ -895,12 +921,22 @@ namespace GH_Toolkit_GUI
         }
         private void UpdatePreviewFields()
         {
-            preview_minutes_gh3.Value = previewStartTime / 60000;
-            preview_seconds_gh3.Value = (previewStartTime % 60000) / 1000;
-            preview_mills_gh3.Value = (previewStartTime % 60000) % 1000;
-            length_minutes_gh3.Value = previewEndTime / 60000;
-            length_seconds_gh3.Value = (previewEndTime % 60000) / 1000;
-            length_mills_gh3.Value = (previewEndTime % 60000) % 1000;
+            if (previewStartTime < 0)
+            {
+                previewStartTime = 0;
+            }
+            if (previewEndTime < 0)
+            {
+                previewEndTime = 0;
+            }
+            var startTemp = previewStartTime;
+            var endTemp = previewEndTime;
+            preview_minutes_gh3.Value = startTemp / 60000;
+            preview_seconds_gh3.Value = (startTemp % 60000) / 1000;
+            preview_mills_gh3.Value = startTemp % 1000;
+            length_minutes_gh3.Value = endTemp / 60000;
+            length_seconds_gh3.Value = (endTemp % 60000) / 1000;
+            length_mills_gh3.Value = endTemp % 1000;
             previewMinutes.Value = preview_minutes_gh3.Value;
             previewSeconds.Value = preview_seconds_gh3.Value;
             previewMills.Value = preview_mills_gh3.Value;
@@ -985,17 +1021,9 @@ namespace GH_Toolkit_GUI
         // Compiling Logic
         private void PreCompileCheck()
         {
-            if (compile_input.Text == "")
-            {
-                compile_input.Text = Path.GetDirectoryName(project_input.Text);
-            }
-            if (song_checksum.Text == "")
-            {
-                CreateChecksum();
-            }
-            ConsoleCompile = Path.Combine(compile_input.Text, "Console");
+            ConsoleStringCheck();
             string game = CurrentGame;
-            if (game == "GH3" || game == "GHA")
+            if ((game == "GH3" || game == "GHA") && CurrentPlatform == "PC")
             {
                 Gh3PcCheck(game);
             }
@@ -1028,6 +1056,18 @@ namespace GH_Toolkit_GUI
                 CreateConsoleFolder();
             }
 
+        }
+        private void ConsoleStringCheck()
+        {
+            if (compile_input.Text == "")
+            {
+                compile_input.Text = Path.GetDirectoryName(project_input.Text);
+            }
+            if (song_checksum.Text == "")
+            {
+                CreateChecksum();
+            }
+            ConsoleCompile = Path.Combine(compile_input.Text, "Console");
         }
         private void CreateConsoleFolder()
         {
@@ -1140,6 +1180,11 @@ namespace GH_Toolkit_GUI
                 QB.QBItem songItem = new QB.QBItem((string)songEntry["checksum"], songEntry);
                 var saveQb = Path.Combine(ConsoleCompile, "songs.info");
                 var bytes = QB.CompileQbFile([songItem], "songs.info", GAME_GH3, CONSOLE_XBOX);
+                if (bytes == null)
+                {
+                    Console.WriteLine("Failed to compile songs.info");
+                    return;
+                }
                 File.WriteAllBytes(saveQb, bytes);
             }
             else if (CurrentPlatform == "PC")
@@ -1520,7 +1565,7 @@ namespace GH_Toolkit_GUI
             {
                 Metadata = PackageMetadata();
             }
-            
+
             Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
         }
         private async Task CompileGh3Audio()
@@ -1600,6 +1645,10 @@ namespace GH_Toolkit_GUI
                     File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
                     File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
                 }
+                else if (isAudioCompile)
+                {
+
+                }
                 else if (CurrentPlatform == "PC")
                 {
                     MoveToGh3MusicFolder(fsbOut);
@@ -1664,7 +1713,9 @@ namespace GH_Toolkit_GUI
             try
             {
                 Console.WriteLine("Compiling Audio...");
-                string[] backingPaths = backingInput.Items.Cast<string>().ToArray();
+                //string[] backingPaths = backingInput.Items.Cast<string>().ToArray();
+                string[] backingPaths = backingInput.Items.Cast<string>()
+                    .ToArray();
 
                 FSB fsb = new FSB();
 
@@ -1708,7 +1759,7 @@ namespace GH_Toolkit_GUI
                 Console.WriteLine("Combining Audio...");
                 var fsbList = fsb.CombineFSB4File(drumFiles, otherFiles, backingFiles, [previewOutput], fsbOutput);
 
-                if (CurrentPlatform == "PC")
+                if (CurrentPlatform == "PC" && !isAudioCompile)
                 {
                     foreach (string file in fsbList)
                     {
@@ -1762,11 +1813,11 @@ namespace GH_Toolkit_GUI
             string skaPath = skaFilesInput.Text;
             if (!Directory.Exists(skaFilesInput.Text))
             {
-                skaFilesInput.Text = lipSyncPath+"-temp";
+                skaFilesInput.Text = lipSyncPath + "-temp";
                 skaPath = skaFilesInput.Text;
                 Directory.CreateDirectory(skaPath);
             }
-            
+
             if (Directory.Exists(lipSyncPath))
             {
 
@@ -1971,7 +2022,7 @@ namespace GH_Toolkit_GUI
                 {
                     throw new FileNotFoundException($"Missing audio file {audio} for download file creation.");
                 }
-                if (duration == 0) 
+                if (duration == 0)
                 {
                     var fileInfo = new FileInfo(audio);
                     var length = fileInfo.Length - 128; // Data starts at 128
@@ -1993,8 +2044,9 @@ namespace GH_Toolkit_GUI
             var previewEncryptString = Path.GetFileNameWithoutExtension(previewPath);
             File.WriteAllBytes(previewSave, EncryptDecrypt.EncryptFSB4(File.ReadAllBytes(previewPath), previewEncryptString));
         }
-        private void compile_pak_button_Click(object sender, EventArgs e)
+        private async Task CompilePaksAsync()
         {
+            
             Console.WriteLine($"Compiling song for {CurrentGame}");
             SetConsoleChecksum();
             var time1 = DateTime.Now;
@@ -2037,11 +2089,20 @@ namespace GH_Toolkit_GUI
                 ShowPostCompile();
             }
         }
+        private async void compile_pak_button_Click(object sender, EventArgs e)
+        {
+            await TaskWithFilePathUpdates(CompilePaksAsync);
+        }
         private async void compile_all_button_Click(object sender, EventArgs e)
         {
-            await CompileAll();
+            await TaskWithFilePathUpdates(CompileAll);
         }
-
+        private async Task TaskWithFilePathUpdates(Func<Task> action)
+        {
+            SetAllToAbsolute();
+            await action();
+            SetAllToRelative();
+        }
         private void ShowPostCompile()
         {
             if (isExport)
@@ -2260,8 +2321,28 @@ namespace GH_Toolkit_GUI
                 return;
             }
             isExport = true;
-            await CompileAll();
+            await TaskWithFilePathUpdates(CompileAll);
             isExport = false;
+        }
+
+        private async void compileAudioToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveProject();
+            ConsoleStringCheck();
+            isAudioCompile = true;
+            if (CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA)
+            {
+                await CompileGh3Audio();
+            }
+            else if (CurrentGame == GAME_GHWT)
+            {
+                await CompileGhwtAudio();
+            }
+            else
+            {
+                await CompileGhwtAudio(true);
+            }
+            isAudioCompile = false;
         }
     }
 }

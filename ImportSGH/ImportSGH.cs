@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GH_Toolkit_Core.QB;
+using GH_Toolkit_Core.PAK;
 using static GH_Toolkit_Core.QB.QBConstants;
 using GH_Toolkit_Core.Methods;
 using System.Reflection;
@@ -22,7 +23,7 @@ namespace GH_Toolkit_GUI
 {
     public partial class ImportSGH : Form
     {
-        private readonly string sghFileFilter = "SGH Files (*.sgh)|*.sgh";
+        private readonly string sghFileFilter = "SGH Files (*.sgh)|*.sgh|Zip Files (*.zip)|*.zip|All files (*.*)|*.*";
         private Dictionary<string, QBStruct.QBStructData> MasterList = new Dictionary<string, QBStruct.QBStructData>();
         private string SghPath = "";
         private string SghFolder = "";
@@ -109,11 +110,20 @@ namespace GH_Toolkit_GUI
             string game = GAME_GH3;
             try
             {
-                OnyxCheck();
                 compilePath = SghFolder;
+                var sections = "sections.q";
+                var sectionPath = Path.Combine(compilePath, sections);
+                Dictionary<string, QB.QBItem>? sectionDict = null;
+
                 Directory.CreateDirectory(compilePath);
                 Console.WriteLine("Extracting all songs from SGH file...");
                 GHTCP.ExtractSghZip(SghPath, compilePath, out bool isEncrypted);
+
+                if (File.Exists(sectionPath))
+                {
+                    var qbFile = QB.ParseQFromFile(sectionPath);
+                    sectionDict = QB.QbEntryDict(qbFile);  
+                }
 
                 DeleteTempFiles(compilePath);
 
@@ -147,6 +157,7 @@ namespace GH_Toolkit_GUI
                 var platform = ConsoleSelect.Text;
                 if (platform == CONSOLE_PC)
                 {
+                    Gh3PcCheck(game);
                     var (pakData, pabData) = AddToDownloadList(GetGh3PakFile(game), CONSOLE_PC, toImport);
                     var musicFolder = Path.Combine(GetGh3Folder(game), "DATA", "MUSIC");
                     var songsFolder = Path.Combine(GetGh3Folder(game), "DATA", "SONGS");
@@ -159,36 +170,67 @@ namespace GH_Toolkit_GUI
                         var fsbPathGame = Path.Combine(musicFolder, $"{songName}.fsb.xen");
                         var datPathGame = Path.Combine(musicFolder, $"{songName}.dat.xen");
                         var songPathGame = Path.Combine(songsFolder, $"{songName}_song.pak.xen");
-                        if (File.Exists(fsbPath))
-                        {
-                            File.Move(fsbPath, fsbPathGame, true);
-                        }
-                        else
+                        if (!File.Exists(fsbPath))
                         {
                             throw new Exception($"Cannot find {songName} FSB in SGH file.");
                         }
-                        if (File.Exists(datPath))
-                        {
-                            File.Move(datPath, datPathGame, true);
-                        }
-                        else
+                        if (!File.Exists(datPath))
                         {
                             throw new Exception($"Cannot find {songName} DAT in SGH file.");
                         }
-                        if (File.Exists(songPath))
-                        {
-                            File.Move(songPath, songPathGame, true);
-                        }
-                        else
+                        if (!File.Exists(songPath))
                         {
                             throw new Exception($"Cannot find {songName} song PAK in SGH file.");
                         }
+
+                        if (sectionDict != null)
+                        {
+                            var pakEntries = PAK.PakEntriesFromFilepath(songPath);
+                            var songMid = $"songs/{songName}.mid.qb";
+                            foreach (var entry in pakEntries)
+                            {
+                                
+                                if (entry.FullName == songMid)
+                                {
+                                    var markers = $"{songName}_markers";
+                                    var songQb = QB.QbEntryDictFromBytes(entry.EntryData, "big", songName);
+                                    if (songQb.TryGetValue(markers, out var qbMarkers))
+                                    {
+                                        var markerArray = qbMarkers.Data as QBArray.QBArrayNode;
+                                        foreach (QBStruct.QBStructData marker in markerArray.Items)
+                                        {
+                                            var markerData = (string)marker["marker"];
+                                            if (sectionDict.TryGetValue(markerData, out var markerString))
+                                            {
+                                                string newSection = (string)markerString.Data;
+                                                if (newSection != null)
+                                                {
+                                                    marker["marker"] = newSection;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var songQbBytes = QB.CompileQbFromDict(songQb, songMid, game, "PC");
+                                    entry.OverwriteData(songQbBytes);
+                                    var pakCompiler = new PAK.PakCompiler(game, "PC", split: false);
+                                    var (newSectData, _) = pakCompiler.CompilePakEntries(pakEntries);
+                                    File.WriteAllBytes(songPath, newSectData);
+                                    break;
+                                }
+                            }
+                            //
+                        }
+
+                        File.Move(fsbPath, fsbPathGame, true);
+                        File.Move(datPath, datPathGame, true);
+                        File.Move(songPath, songPathGame, true);
                     }
 
                     OverwriteGh3Pak(pakData, pabData!, game);
                 }
                 else
                 {
+                    OnyxCheck();
                     string sghName = $"{SghFolder}_{platform}";
                     string sghFolderName = ReplaceNonAlphanumeric(Path.GetFileName(SghFolder));
                     CreateConsoleDownloadFilesGh3(checksum, GAME_GH3, platform, compilePath, ResourcePath, toImport);
@@ -231,6 +273,7 @@ namespace GH_Toolkit_GUI
                     Console.WriteLine("Creating package file...");
                     CreateForGame.CompileWithOnyx(Pref.OnyxCliPath, onyxArgs);
                 }
+                MessageBox.Show("Songs have been successfully converted and are ready for use!", "Conversion Complete");
             }
 
             catch (Exception e)
@@ -307,6 +350,11 @@ namespace GH_Toolkit_GUI
         private void deleteCheckedButton_Click(object sender, EventArgs e)
         {
             DeleteChecked();
+        }
+
+        private void resetQbPak_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
