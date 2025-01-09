@@ -1,7 +1,8 @@
 {
   "profiles": {
     "GH-Toolkit-GUI": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\RB\\Songs\\WaveGroup\\Compile\\addy_slowridefull.ghproj\""
     }
   }
 }

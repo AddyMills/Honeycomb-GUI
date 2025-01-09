@@ -929,12 +929,14 @@ namespace GH_Toolkit_GUI
             {
                 previewEndTime = 0;
             }
-            preview_minutes_gh3.Value = previewStartTime / 60000;
-            preview_seconds_gh3.Value = (previewStartTime % 60000) / 1000;
-            preview_mills_gh3.Value = (previewStartTime % 60000) % 1000;
-            length_minutes_gh3.Value = previewEndTime / 60000;
-            length_seconds_gh3.Value = (previewEndTime % 60000) / 1000;
-            length_mills_gh3.Value = (previewEndTime % 60000) % 1000;
+            var startTemp = previewStartTime;
+            var endTemp = previewEndTime;
+            preview_minutes_gh3.Value = startTemp / 60000;
+            preview_seconds_gh3.Value = (startTemp % 60000) / 1000;
+            preview_mills_gh3.Value = startTemp % 1000;
+            length_minutes_gh3.Value = endTemp / 60000;
+            length_seconds_gh3.Value = (endTemp % 60000) / 1000;
+            length_mills_gh3.Value = endTemp % 1000;
             previewMinutes.Value = preview_minutes_gh3.Value;
             previewSeconds.Value = preview_seconds_gh3.Value;
             previewMills.Value = preview_mills_gh3.Value;
