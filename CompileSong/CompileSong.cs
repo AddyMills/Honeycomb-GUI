@@ -82,7 +82,6 @@ namespace GH_Toolkit_GUI
 
         private string compileFolderPath = "";
         private string GhwtModsFolderPath = "";
-        private string Ps2IsoFolderPath = "";
         private string projectFilePath = "";
 
         private bool isProgrammaticChange = false;
@@ -431,7 +430,7 @@ namespace GH_Toolkit_GUI
             platform_ps3.Enabled = true;
             if (CurrentGame == "GH3")
             {
-
+                platform_ps2.Enabled = true;
             }
             else if (CurrentGame == "GHA")
             {
@@ -786,15 +785,7 @@ namespace GH_Toolkit_GUI
         }
         private void SaveCompileString(object sender, EventArgs e)
         {
-            string platform = GetPlatform();
-            if (platform == "PS2")
-            {
-                Ps2IsoFolderPath = compile_input.Text;
-            }
-            else
-            {
-                compileFolderPath = compile_input.Text;
-            }
+            compileFolderPath = compile_input.Text;
         }
         private void SaveProjectString(object sender, EventArgs e)
         {
@@ -1040,11 +1031,7 @@ namespace GH_Toolkit_GUI
             }
             if (CurrentPlatform == "PS2" && !isExport)
             {
-                if (Ps2IsoFolderPath == "")
-                {
-                    MessageBox.Show("Your PS2 ISO folder has not been set. Please select your ISO folder now.", "Folder Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    Ps2IsoFolderPath = AskForGamePath();
-                }
+                CreateConsoleFolder();
             }
             else if (CurrentPlatform != "PC")
             {
@@ -1194,7 +1181,7 @@ namespace GH_Toolkit_GUI
             }
             else if (CurrentPlatform == "PS2")
             {
-                Console.WriteLine("How'd you get here?");
+                
             }
             else
             {
@@ -1555,9 +1542,51 @@ namespace GH_Toolkit_GUI
             // text pak is download\download_song{x}.qb where x is the checksum
             // other pak is download\dl{x}.qb where x is the checksum
         }
-        private void CreateConsoleFilesGh5()
-        {
 
+        private void CreateConsoleFilesGh3Ps2()
+        {
+            Metadata = PackageMetadata();
+            var songListEntry = Metadata.GenerateGh3SongListEntry(CurrentGame, CurrentPlatform);
+            var setlistItem = new QB.QBItem((string)songListEntry["checksum"], songListEntry);
+
+            var ps2Compile = Path.Combine(compile_input.Text, "PS2 Compile");
+            Directory.CreateDirectory(ps2Compile);
+            var ps2SkaFiles = Path.Combine(compile_input.Text, "PS2 SKA Files");
+            var ps2PakFile = Path.Combine(compile_input.Text, $"{song_checksum.Text}.pak.ps2");
+            var ps2Msv = Path.Combine(compile_input.Text, "output.msv");
+            var ps2MsvCoop = Path.Combine(compile_input.Text, "output_coop.msv");
+            var ps2MsvPreview = Path.Combine(compile_input.Text, "preview.msv");
+            var spChecksum = CRC.QBKey(song_checksum.Text).Replace("0x", "").ToUpper();
+            var mpChecksum = CRC.QBKey($"{song_checksum.Text}_coop").Replace("0x", "").ToUpper();
+
+            var setlistSave = Path.Combine(ps2Compile, "setlist.q");
+            QB.QbToText([setlistItem], setlistSave);
+            if (Directory.Exists(ps2SkaFiles))
+            {
+                var finalSka = Path.Combine(ps2Compile, "SKA");
+                Directory.CreateDirectory(finalSka);
+                foreach (var file in Directory.GetFiles(ps2SkaFiles))
+                {
+                    File.Move(file, Path.Combine(finalSka, Path.GetFileName(file)), true);
+                }
+                Directory.Delete(ps2SkaFiles);
+            }
+            if (File.Exists(ps2PakFile))
+            {
+                File.Move(ps2PakFile, Path.Combine(ps2Compile, Path.GetFileName(ps2PakFile)), true);
+            }
+            if (File.Exists(ps2Msv))
+            {
+                File.Move(ps2Msv, Path.Combine(ps2Compile, Path.GetFileName(ps2Msv).Replace("output.msv", $"{spChecksum}.IMF")), true);
+            }
+            if (File.Exists(ps2MsvCoop))
+            {
+                File.Move(ps2MsvCoop, Path.Combine(ps2Compile, Path.GetFileName(ps2MsvCoop).Replace("output.msv", $"{mpChecksum}.IMF")), true);
+            }
+            if (File.Exists(ps2MsvPreview))
+            {
+                File.Move(ps2MsvPreview, Path.Combine(ps2Compile, Path.GetFileName(ps2MsvPreview).Replace("preview.msv", $"{spChecksum}.ISF")), true);
+            }
         }
         private void CreateConsolePackage()
         {
@@ -1569,6 +1598,42 @@ namespace GH_Toolkit_GUI
             Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
         }
         private async Task CompileGh3Audio()
+        {
+            if (CurrentPlatform == CONSOLE_PS2)
+            {
+                var msv = new MSV();
+                string[] backingPaths = backing_input_gh3.Items.Cast<string>().ToArray();
+                string[] allPaths = backingPaths.Concat([guitar_input_gh3.Text, rhythm_input_gh3.Text]).ToArray();
+                string[] coopBackingPaths = coop_backing_input_gh3.Items.Cast<string>().ToArray();
+                string outputFolder = Path.Combine(compile_input.Text);
+                
+                decimal previewStart = previewStartTime / 1000m;
+                decimal previewLength = previewEndTime / 1000m;
+                if (gh3_set_end.Checked)
+                {
+                    previewLength -= previewStart;
+                }
+                decimal fadeIn = UserPreferences.Default.PreviewFadeIn;
+                decimal fadeOut = UserPreferences.Default.PreviewFadeOut;
+                var previewSave = Path.Combine(outputFolder, "preview.wav");
+
+                var audioTask = msv.CreatePs2Msv(guitar_input_gh3.Text, rhythm_input_gh3.Text, backingPaths, coop_guitar_input_gh3.Text, coop_rhythm_input_gh3.Text, coopBackingPaths, outputFolder, 33075);
+                var previewTask = msv.MakePreviewPs2(allPaths, previewSave, previewStart, previewLength, fadeIn, fadeOut, previewVolumeGh3.Value, 33075);
+                
+                
+                await previewTask;
+
+                await msv.CreatePs2Preview(previewSave);
+
+                await audioTask;
+            }
+            else
+            {
+                await CompileGh3ModernConsoles();
+            }
+            
+        }
+        private async Task CompileGh3ModernConsoles()
         {
             string fileName = GetSongChecksum();
             string gtrOutput = Path.Combine(compile_input.Text, $"{fileName}_guitar.mp3");
@@ -1881,6 +1946,10 @@ namespace GH_Toolkit_GUI
                 {
                     CreateConsolePackage();
                 }
+                else if (compileSuccess && CurrentPlatform == CONSOLE_PS2)
+                {
+                    CreateConsoleFilesGh3Ps2();
+                }
                 else if (isExport)
                 {
                     Console.WriteLine("Packing up the song for export...");
@@ -2067,16 +2136,23 @@ namespace GH_Toolkit_GUI
                 CreateConsoleDownloadFilesGh5(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings, Metadata.PackageName);
             }
 
-            if (success && (CurrentPlatform == "PS3" || CurrentPlatform == platform_360.Text))
+            if (success)
             {
-                try
+                if (CurrentPlatform == "PS3" || CurrentPlatform == platform_360.Text)
                 {
-                    CreateConsolePackage();
+                    try
+                    {
+                        CreateConsolePackage();
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(ex, "Console Package Creation Failed!");
+                        success = false;
+                    }
                 }
-                catch (Exception ex)
+                else if (CurrentPlatform == CONSOLE_PS2)
                 {
-                    HandleException(ex, "Console Package Creation Failed!");
-                    success = false;
+                    CreateConsoleFilesGh3Ps2();
                 }
             }
             var time2 = DateTime.Now;
