@@ -1545,6 +1545,7 @@ namespace GH_Toolkit_GUI
 
         private void CreateConsoleFilesGh3Ps2()
         {
+            var dummyText = "\\\\Dummy file - just here to fix dependencies.\r\n";
             Metadata = PackageMetadata();
             var songListEntry = Metadata.GenerateGh3SongListEntry(CurrentGame, CurrentPlatform);
             var setlistItem = new QB.QBItem((string)songListEntry["checksum"], songListEntry);
@@ -1558,34 +1559,49 @@ namespace GH_Toolkit_GUI
             var ps2MsvPreview = Path.Combine(compile_input.Text, "preview.msv");
             var spChecksum = CRC.QBKey(song_checksum.Text).Replace("0x", "").ToUpper();
             var mpChecksum = CRC.QBKey($"{song_checksum.Text}_coop").Replace("0x", "").ToUpper();
+            var spPath = Path.Combine(ps2Compile, "MUSIC", spChecksum.Substring(0, 1));
+            var mpPath = Path.Combine(ps2Compile, "MUSIC", mpChecksum.Substring(0, 1));
 
             var setlistSave = Path.Combine(ps2Compile, "setlist.q");
             QB.QbToText([setlistItem], setlistSave);
             if (Directory.Exists(ps2SkaFiles))
             {
-                var finalSka = Path.Combine(ps2Compile, "SKA");
+                var finalSka = Path.Combine(ps2Compile, "WAD", "custom_songs", "ska", Metadata.Checksum);
                 Directory.CreateDirectory(finalSka);
                 foreach (var file in Directory.GetFiles(ps2SkaFiles))
                 {
-                    File.Move(file, Path.Combine(finalSka, Path.GetFileName(file)), true);
+                    var newSkaPath = Path.Combine(finalSka, Path.GetFileName(file));
+                    var relSkaPath = Path.GetRelativePath(Path.Combine(ps2Compile, "WAD"), newSkaPath);
+                    relSkaPath = relSkaPath.Substring(0, relSkaPath.IndexOf(".ps2", StringComparison.InvariantCultureIgnoreCase));
+                    Metadata.AddPs2ScriptEntry(relSkaPath);
+                    File.Move(file, newSkaPath, true);
                 }
+                var allanimsSave = Path.Combine(ps2Compile, "allanims.q");
+                Metadata.SavePs2Script(allanimsSave);
                 Directory.Delete(ps2SkaFiles);
             }
             if (File.Exists(ps2PakFile))
             {
-                File.Move(ps2PakFile, Path.Combine(ps2Compile, Path.GetFileName(ps2PakFile)), true);
+                var songsFolder = Path.Combine(ps2Compile, "WAD", "songs");
+                Directory.CreateDirectory(songsFolder);
+                File.Move(ps2PakFile, Path.Combine(songsFolder, Path.GetFileName(ps2PakFile)), true);
+                File.WriteAllText(Path.Combine(songsFolder, $"{song_checksum.Text}_gfx.pak.ps2"), dummyText);
+                File.WriteAllText(Path.Combine(songsFolder, $"{song_checksum.Text}_sfx.pak.ps2"), dummyText);
             }
             if (File.Exists(ps2Msv))
             {
-                File.Move(ps2Msv, Path.Combine(ps2Compile, Path.GetFileName(ps2Msv).Replace("output.msv", $"{spChecksum}.IMF")), true);
+                Directory.CreateDirectory(spPath);
+                File.Move(ps2Msv, Path.Combine(spPath, Path.GetFileName(ps2Msv).Replace("output.msv", $"{spChecksum}.IMF")), true);
             }
             if (File.Exists(ps2MsvCoop))
             {
-                File.Move(ps2MsvCoop, Path.Combine(ps2Compile, Path.GetFileName(ps2MsvCoop).Replace("output.msv", $"{mpChecksum}.IMF")), true);
+                Directory.CreateDirectory(mpPath);
+                File.Move(ps2MsvCoop, Path.Combine(mpPath, Path.GetFileName(ps2MsvCoop).Replace("output_coop.msv", $"{mpChecksum}.IMF")), true);
             }
             if (File.Exists(ps2MsvPreview))
             {
-                File.Move(ps2MsvPreview, Path.Combine(ps2Compile, Path.GetFileName(ps2MsvPreview).Replace("preview.msv", $"{spChecksum}.ISF")), true);
+                Directory.CreateDirectory(spPath);
+                File.Move(ps2MsvPreview, Path.Combine(spPath, Path.GetFileName(ps2Msv).Replace("output.msv", $"{spChecksum}.ISF")), true);
             }
         }
         private void CreateConsolePackage()
