@@ -434,7 +434,7 @@ namespace GH_Toolkit_GUI
             }
             else if (CurrentGame == "GHA")
             {
-                platform_360.Enabled = false;
+                platform_360.Enabled = true;
                 platform_ps3.Enabled = false;
                 platform_pc.Checked = true;
             }
@@ -1181,7 +1181,7 @@ namespace GH_Toolkit_GUI
             }
             else if (CurrentPlatform == "PS2")
             {
-                
+
             }
             else
             {
@@ -1622,7 +1622,7 @@ namespace GH_Toolkit_GUI
                 string[] allPaths = backingPaths.Concat([guitar_input_gh3.Text, rhythm_input_gh3.Text]).ToArray();
                 string[] coopBackingPaths = coop_backing_input_gh3.Items.Cast<string>().ToArray();
                 string outputFolder = Path.Combine(compile_input.Text);
-                
+
                 decimal previewStart = previewStartTime / 1000m;
                 decimal previewLength = previewEndTime / 1000m;
                 if (gh3_set_end.Checked)
@@ -1635,8 +1635,8 @@ namespace GH_Toolkit_GUI
 
                 var audioTask = msv.CreatePs2Msv(guitar_input_gh3.Text, rhythm_input_gh3.Text, backingPaths, coop_guitar_input_gh3.Text, coop_rhythm_input_gh3.Text, coopBackingPaths, outputFolder, 33075);
                 var previewTask = msv.MakePreviewPs2(allPaths, previewSave, previewStart, previewLength, fadeIn, fadeOut, previewVolumeGh3.Value, 33075);
-                
-                
+
+
                 await previewTask;
 
                 await msv.CreatePs2Preview(previewSave);
@@ -1647,7 +1647,7 @@ namespace GH_Toolkit_GUI
             {
                 await CompileGh3ModernConsoles();
             }
-            
+
         }
         private async Task CompileGh3ModernConsoles()
         {
@@ -1979,7 +1979,7 @@ namespace GH_Toolkit_GUI
             }
             catch (Exception ex)
             {
-                // Errors are handled in the CompilePakGh3 and CompileGh3All methods
+                HandleException(ex, "Compile Failed!");
             }
             finally
             {
@@ -2046,6 +2046,10 @@ namespace GH_Toolkit_GUI
             {
                 MidiFailException(ex);
             }
+            catch (SkaFileParseException ex)
+            {
+                SkaFailException(ex);
+            }
             catch (Exception ex)
             {
                 HandleException(ex, "Compile Failed!");
@@ -2066,6 +2070,10 @@ namespace GH_Toolkit_GUI
             {
                 MidiFailException(ex);
             }
+            catch (SkaFileParseException ex)
+            {
+                SkaFailException(ex);
+            }
             catch (Exception ex)
             {
                 HandleException(ex, "Compile Failed!");
@@ -2085,6 +2093,11 @@ namespace GH_Toolkit_GUI
             catch (MidiCompileException ex)
             {
                 MidiFailException(ex);
+            }
+            catch (SkaFileParseException ex)
+            {
+                SkaFailException(ex);
+
             }
             catch (Exception ex)
             {
@@ -2131,7 +2144,7 @@ namespace GH_Toolkit_GUI
         }
         private async Task CompilePaksAsync()
         {
-            
+
             Console.WriteLine($"Compiling song for {CurrentGame}");
             SetConsoleChecksum();
             var time1 = DateTime.Now;
@@ -2147,9 +2160,12 @@ namespace GH_Toolkit_GUI
             else
             {
                 success = CompilePakGh5();
-                MoveGh5Files();
-                (SongList, QsStrings) = Metadata.GenerateGh5SongListEntry();
-                CreateConsoleDownloadFilesGh5(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings, Metadata.PackageName);
+                if (success)
+                {
+                    MoveGh5Files();
+                    (SongList, QsStrings) = Metadata.GenerateGh5SongListEntry();
+                    CreateConsoleDownloadFilesGh5(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings, Metadata.PackageName);
+                }
             }
 
             if (success)
@@ -2436,5 +2452,6 @@ namespace GH_Toolkit_GUI
             }
             isAudioCompile = false;
         }
+
     }
 }

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CompileSong));
             compiler_tabs = new TabControl();
             metadata_tab = new TabPage();
             import_from_other = new Button();
@@ -3831,8 +3832,10 @@
             Controls.Add(tableLayoutPanel12);
             Controls.Add(toolStrip1);
             Controls.Add(compiler_tabs);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(18, 698);
             Name = "CompileSong";
+            ShowIcon = false;
             Text = "Work with Songs";
             compiler_tabs.ResumeLayout(false);
             metadata_tab.ResumeLayout(false);
