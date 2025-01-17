@@ -46,5 +46,14 @@ namespace GH_Toolkit_Exceptions
             MessageBox.Show("Errors were found while compiling the MIDI.\nPlease refer to the log on the toolkit's main window.", "MIDI Compilation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             // Make a custom error handler in the near future
         }
+
+        public static void SkaFailException(Exception ex)
+        {
+            Console.WriteLine($"Errors were found while processing the SKA Files:");
+            Console.WriteLine(ex.Message);
+            Console.WriteLine("Compilation has been cancelled.");
+            MessageBox.Show("Errors were found while processing the SKA.\nPlease refer to the log on the toolkit's main window.", "SKA Processing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Make a custom error handler in the near future
+        }
     }
 }
