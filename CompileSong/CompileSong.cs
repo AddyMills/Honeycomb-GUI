@@ -70,7 +70,7 @@ namespace GH_Toolkit_GUI
         private RadioButton lastCheckedRadioButton = null;
         private string audioFileFilter = "Audio files (*.mp3, *.ogg, *.flac, *.wav)|*.mp3;*.ogg;*.flac;*.wav|All files (*.*)|*.*";
         private string audioRegex = ".*\\.(mp3|ogg|flac|wav)$";
-        private string midiFileFilter = "MIDI files (*.mid)|*.mid|All files (*.*)|*.*";
+        private string midiFileFilter = "Guitar Hero Note Files (*.mid, *.q)|*.mid;*.q|MIDI files (*.mid)|*.mid|Q files|*.q|All files (*.*)|*.*";
         private string midiRegexCh = ".*\\.mid$";
         private string qFileFilter = "Q files (*.q)|*.q|All files (*.*)|*.*";
         private string ghprojFileFilter = "GHProj files (*.ghproj)|*.ghproj|All files (*.*)|*.*";
@@ -434,9 +434,7 @@ namespace GH_Toolkit_GUI
             }
             else if (CurrentGame == "GHA")
             {
-                platform_360.Enabled = true;
-                platform_ps3.Enabled = false;
-                platform_pc.Checked = true;
+                platform_ps2.Enabled = true;
             }
             else if (CurrentGame == "GHWT")
             {
@@ -1158,7 +1156,8 @@ namespace GH_Toolkit_GUI
                 rhythmTrack: p2_rhythm_check.Checked,
                 overrideBeat: use_beat_check.Checked,
                 hopoType: hopo_mode_select.SelectedIndex,
-                isSteven: vocal_gender_select_gh3.Text == "Steven Tyler");
+                isSteven: vocal_gender_select_gh3.Text == "Steven Tyler",
+                gender: vocal_gender_select_gh3.Text);
 
             if (isExport)
             {
@@ -1306,8 +1305,9 @@ namespace GH_Toolkit_GUI
             }
             File.Move(audioPath, savePath, true);
         }
-        private GhMetadata PackageMetadata(bool doubleKick = false)
+        private GhMetadata PackageMetadata(bool doubleKick = false, float hopoValOverride = 500f)
         {
+
             return new GhMetadata
             {
                 Checksum = GetSongChecksum(),
@@ -1335,7 +1335,7 @@ namespace GH_Toolkit_GUI
                 BandVol = (float)gh3_band_vol.Value,
                 GtrVol = (float)gh3_gtr_vol.Value,
                 Countoff = countoff_select_gh3.Text,
-                HopoThreshold = 500f
+                HopoThreshold = hopoValOverride
             };
         }
         private GhMetadata PackageMetadataGhwtPlus(bool doubleKick = false)
@@ -1545,8 +1545,10 @@ namespace GH_Toolkit_GUI
 
         private void CreateConsoleFilesGh3Ps2()
         {
+
             var dummyText = "\\\\Dummy file - just here to fix dependencies.\r\n";
-            Metadata = PackageMetadata();
+            var hopoOverride = (float)NsHopoVal.Value;
+            Metadata = PackageMetadata(hopoValOverride: hopoOverride);
             var songListEntry = Metadata.GenerateGh3SongListEntry(CurrentGame, CurrentPlatform);
             var setlistItem = new QB.QBItem((string)songListEntry["checksum"], songListEntry);
 
@@ -2324,13 +2326,11 @@ namespace GH_Toolkit_GUI
         }
         private void UpdateNsValue()
         {
-            nsHopoThreshold = 1920 / HmxHopoVal.Value / 4;
-            NsHopoVal.Text = Math.Round(nsHopoThreshold, 5).ToString();
+
         }
         private void HmxHopoVal_ValueChanged(object sender, EventArgs e)
         {
 
-            UpdateNsValue();
         }
 
         private void renderedPreviewCheck_CheckedChanged(object sender, EventArgs e)
