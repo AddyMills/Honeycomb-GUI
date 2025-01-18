@@ -242,7 +242,6 @@
             label23 = new Label();
             HmxHopoVal = new NumericUpDown();
             label24 = new Label();
-            NsHopoVal = new TextBox();
             hopo_mode_select = new ComboBox();
             label25 = new Label();
             label26 = new Label();
@@ -318,6 +317,7 @@
             compile_select = new Button();
             project_select = new Button();
             compile_input = new TextBox();
+            NsHopoVal = new NumericUpDown();
             compiler_tabs.SuspendLayout();
             metadata_tab.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -386,6 +386,7 @@
             ((System.ComponentModel.ISupportInitialize)bandTierValue).BeginInit();
             toolStrip1.SuspendLayout();
             tableLayoutPanel12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)NsHopoVal).BeginInit();
             SuspendLayout();
             // 
             // compiler_tabs
@@ -2950,13 +2951,13 @@
             tableLayoutPanel10.ColumnCount = 4;
             tableLayoutPanel9.SetColumnSpan(tableLayoutPanel10, 5);
             tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
             tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 80F));
+            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
+            tableLayoutPanel10.Controls.Add(NsHopoVal, 3, 0);
             tableLayoutPanel10.Controls.Add(label23, 0, 0);
             tableLayoutPanel10.Controls.Add(HmxHopoVal, 1, 0);
             tableLayoutPanel10.Controls.Add(label24, 2, 0);
-            tableLayoutPanel10.Controls.Add(NsHopoVal, 3, 0);
             tableLayoutPanel10.Location = new Point(105, 0);
             tableLayoutPanel10.Margin = new Padding(0);
             tableLayoutPanel10.Name = "tableLayoutPanel10";
@@ -2984,7 +2985,7 @@
             HmxHopoVal.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             HmxHopoVal.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
             HmxHopoVal.Name = "HmxHopoVal";
-            HmxHopoVal.Size = new Size(67, 23);
+            HmxHopoVal.Size = new Size(70, 23);
             HmxHopoVal.TabIndex = 1;
             HmxHopoVal.Value = new decimal(new int[] { 170, 0, 0, 0 });
             HmxHopoVal.ValueChanged += HmxHopoVal_ValueChanged;
@@ -2993,21 +2994,12 @@
             // 
             label24.AutoSize = true;
             label24.Dock = DockStyle.Fill;
-            label24.Location = new Point(147, 0);
+            label24.Location = new Point(150, 0);
             label24.Name = "label24";
-            label24.Size = new Size(53, 31);
+            label24.Size = new Size(231, 31);
             label24.TabIndex = 2;
-            label24.Text = "NS Value";
+            label24.Text = "NS Value (When using .q as MIDI File Only)";
             label24.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // NsHopoVal
-            // 
-            NsHopoVal.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            NsHopoVal.Location = new Point(206, 4);
-            NsHopoVal.Name = "NsHopoVal";
-            NsHopoVal.ReadOnly = true;
-            NsHopoVal.Size = new Size(289, 23);
-            NsHopoVal.TabIndex = 3;
             // 
             // hopo_mode_select
             // 
@@ -3824,6 +3816,18 @@
             compile_input.Size = new Size(419, 23);
             compile_input.TabIndex = 2;
             // 
+            // NsHopoVal
+            // 
+            NsHopoVal.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            NsHopoVal.DecimalPlaces = 7;
+            NsHopoVal.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
+            NsHopoVal.Location = new Point(387, 4);
+            NsHopoVal.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            NsHopoVal.Name = "NsHopoVal";
+            NsHopoVal.Size = new Size(108, 23);
+            NsHopoVal.TabIndex = 3;
+            NsHopoVal.Value = new decimal(new int[] { 295, 0, 0, 131072 });
+            // 
             // CompileSong
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -3926,6 +3930,7 @@
             toolStrip1.PerformLayout();
             tableLayoutPanel12.ResumeLayout(false);
             tableLayoutPanel12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)NsHopoVal).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -4050,7 +4055,6 @@
         private Label label23;
         private NumericUpDown HmxHopoVal;
         private Label label24;
-        private TextBox NsHopoVal;
         private ComboBox hopo_mode_select;
         private Label label25;
         private Label label26;
@@ -4220,5 +4224,6 @@
         private TextBox gh3SkaFilesInput;
         private Button gh3SkaFilesSelect;
         private ToolStripMenuItem compileAudioToolStripMenuItem;
+        private NumericUpDown NsHopoVal;
     }
 }
