@@ -727,6 +727,7 @@ namespace GH_Toolkit_GUI
                     // Update the Current Platform field
                     CurrentPlatform = radioButton.Text;
                     DisplayChecksum();
+                    EnableCompileOnly();
                 }
             }
         }
@@ -745,7 +746,18 @@ namespace GH_Toolkit_GUI
                 dlcChecksum.Visible = false;
             }
         }
-        private void SelectFileFolder(object sender, EventArgs e)
+        private void EnableCompileOnly()
+        {
+            compile_pak_button.Enabled = false;
+            compile_pak_button.Text = "Disabled";
+            if (CurrentPlatform == CONSOLE_PS2 || CurrentPlatform == CONSOLE_WII || CurrentPlatform == CONSOLE_PC)
+            {
+                compile_pak_button.Enabled = true;
+                compile_pak_button.Text = "Compile Song PAK";
+            }
+
+        }
+            private void SelectFileFolder(object sender, EventArgs e)
         {
             Button btn = sender as Button;
             if (btn != null && btn.Tag is Tuple<TextBox, string, string>)
