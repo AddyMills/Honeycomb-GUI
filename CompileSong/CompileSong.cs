@@ -447,7 +447,14 @@ namespace GH_Toolkit_GUI
                 platform_pc.Enabled = false;
                 if (platform_pc.Checked || platform_ps2.Checked)
                 {
-                    platform_360.Checked = true;
+                    if (Pref.PreferredConsole == CONSOLE_PS3)
+                    {
+                        platform_ps3.Checked = true;
+                    }
+                    else
+                    {
+                        platform_360.Checked = true;
+                    }
                 }
             }
         }
@@ -864,10 +871,10 @@ namespace GH_Toolkit_GUI
 
         private void gh3_rendered_preview_check_CheckedChanged(object sender, EventArgs e)
         {
-            if (isProgrammaticChange)
+            /*if (isProgrammaticChange)
             {
                 return;
-            }
+            }*/
             gh3_preview_audio_label.Enabled = gh3_rendered_preview_check.Checked;
             preview_audio_input_gh3.Enabled = gh3_rendered_preview_check.Checked;
             preview_audio_select_gh3.Enabled = gh3_rendered_preview_check.Checked;

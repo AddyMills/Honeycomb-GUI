@@ -44,5 +44,8 @@
     <Setting Name="SongManagerDeleteSongs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="PreferredConsole" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Xbox 360</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

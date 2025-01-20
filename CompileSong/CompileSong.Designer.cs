@@ -239,6 +239,7 @@
             label22 = new Label();
             use_beat_check = new CheckBox();
             tableLayoutPanel10 = new TableLayoutPanel();
+            NsHopoVal = new NumericUpDown();
             label23 = new Label();
             HmxHopoVal = new NumericUpDown();
             label24 = new Label();
@@ -317,7 +318,6 @@
             compile_select = new Button();
             project_select = new Button();
             compile_input = new TextBox();
-            NsHopoVal = new NumericUpDown();
             compiler_tabs.SuspendLayout();
             metadata_tab.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -366,6 +366,7 @@
             compile_settings.SuspendLayout();
             tableLayoutPanel9.SuspendLayout();
             tableLayoutPanel10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)NsHopoVal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)HmxHopoVal).BeginInit();
             ((System.ComponentModel.ISupportInitialize)beat8thLow).BeginInit();
             ((System.ComponentModel.ISupportInitialize)beat8thHigh).BeginInit();
@@ -386,7 +387,6 @@
             ((System.ComponentModel.ISupportInitialize)bandTierValue).BeginInit();
             toolStrip1.SuspendLayout();
             tableLayoutPanel12.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)NsHopoVal).BeginInit();
             SuspendLayout();
             // 
             // compiler_tabs
@@ -2966,6 +2966,18 @@
             tableLayoutPanel10.Size = new Size(498, 31);
             tableLayoutPanel10.TabIndex = 4;
             // 
+            // NsHopoVal
+            // 
+            NsHopoVal.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            NsHopoVal.DecimalPlaces = 7;
+            NsHopoVal.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
+            NsHopoVal.Location = new Point(387, 4);
+            NsHopoVal.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            NsHopoVal.Name = "NsHopoVal";
+            NsHopoVal.Size = new Size(108, 23);
+            NsHopoVal.TabIndex = 3;
+            NsHopoVal.Value = new decimal(new int[] { 295, 0, 0, 131072 });
+            // 
             // label23
             // 
             label23.AutoSize = true;
@@ -3816,18 +3828,6 @@
             compile_input.Size = new Size(419, 23);
             compile_input.TabIndex = 2;
             // 
-            // NsHopoVal
-            // 
-            NsHopoVal.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            NsHopoVal.DecimalPlaces = 7;
-            NsHopoVal.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            NsHopoVal.Location = new Point(387, 4);
-            NsHopoVal.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            NsHopoVal.Name = "NsHopoVal";
-            NsHopoVal.Size = new Size(108, 23);
-            NsHopoVal.TabIndex = 3;
-            NsHopoVal.Value = new decimal(new int[] { 295, 0, 0, 131072 });
-            // 
             // CompileSong
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -3903,6 +3903,7 @@
             tableLayoutPanel9.PerformLayout();
             tableLayoutPanel10.ResumeLayout(false);
             tableLayoutPanel10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)NsHopoVal).EndInit();
             ((System.ComponentModel.ISupportInitialize)HmxHopoVal).EndInit();
             ((System.ComponentModel.ISupportInitialize)beat8thLow).EndInit();
             ((System.ComponentModel.ISupportInitialize)beat8thHigh).EndInit();
@@ -3930,7 +3931,6 @@
             toolStrip1.PerformLayout();
             tableLayoutPanel12.ResumeLayout(false);
             tableLayoutPanel12.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)NsHopoVal).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

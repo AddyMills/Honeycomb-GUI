@@ -40,6 +40,7 @@ namespace GH_Toolkit_GUI
             Gh3FolderPath.Text = Pref.Gh3FolderPath;
             GhaFolderPath.Text = Pref.GhaFolderPath;
             OnyxCliFolder.Text = Pref.OnyxCliPath;
+            PreferredConsoleSetting.Text = Pref.PreferredConsole;
 
             SongManagerDeleteSongs.Checked = Pref.SongManagerDeleteSongs;
         }
@@ -52,6 +53,7 @@ namespace GH_Toolkit_GUI
             Pref.EncryptAudio = EncryptAudio.Checked;
             Pref.WtModsFolder = WtModsFolder.Text;
             Pref.OnyxCliPath = OnyxCliFolder.Text;
+            Pref.PreferredConsole = PreferredConsoleSetting.Text;
 
             Pref.SongManagerDeleteSongs = SongManagerDeleteSongs.Checked;
             // Do not save Gh3/Gha folder paths as they are read-only fields
@@ -83,6 +85,7 @@ namespace GH_Toolkit_GUI
             Gh3FolderPath.TextChanged += (s, e) => SetUnsavedChanges(true);
             GhaFolderPath.TextChanged += (s, e) => SetUnsavedChanges(true);
             OnyxCliFolder.TextChanged += (s, e) => SetUnsavedChanges(true);
+            PreferredConsoleSetting.TextChanged += (s, e) => SetUnsavedChanges(true);
             SongManagerDeleteSongs.CheckedChanged += (s, e) => SetUnsavedChanges(true);
         }
 
