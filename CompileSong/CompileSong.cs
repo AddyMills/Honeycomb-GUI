@@ -1917,6 +1917,10 @@ namespace GH_Toolkit_GUI
                     string skaFile = Path.Combine(skaPath, relPath);
                     var skaBytes = new SkaFile(file, "big");
                     float multiplier = skaFileSource.SelectedIndex;
+                    if (multiplier == 0)
+                    {
+                        multiplier = 1f;
+                    }
                     if (File.Exists(skaFile))
                     {
                         File.Delete(skaFile);
