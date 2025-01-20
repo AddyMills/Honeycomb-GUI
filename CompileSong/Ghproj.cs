@@ -118,9 +118,9 @@ namespace GH_Toolkit_GUI
             [DefaultValue(-1)]
             public int worGenre { get; set; } = 0;
             [DefaultValue(30000)]
-            public int previewStart { get; set; }
+            public int previewStart { get; set; } = 30000;
             [DefaultValue(30000)]
-            public int previewEnd { get; set; }
+            public int previewEnd { get; set; } = 30000;
             [DefaultValue(170)]
             public int hmxHopoVal { get; set; } = 170;
             public int skaSourceGh3 { get; set; } = 0;
@@ -549,7 +549,6 @@ namespace GH_Toolkit_GUI
             gh3_band_vol.Value = data.bandVolumeGh3;
             p2_rhythm_check.Checked = data.isP2Rhythm;
             coop_audio_check.Checked = data.isCoopAudio;
-            gh3_rendered_preview_check.Checked = data.useRenderedPreview;
             gh3_set_end.Checked = data.setEnd;
 
             // GHWT Audio
