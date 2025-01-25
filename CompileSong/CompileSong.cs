@@ -24,6 +24,7 @@ using GH_Toolkit_Core.Checksum;
 using GH_Toolkit_Core.PS360;
 using System;
 using Microsoft.VisualBasic.Devices;
+using YamlDotNet.Core.Tokens;
 
 namespace GH_Toolkit_GUI
 {
@@ -94,6 +95,7 @@ namespace GH_Toolkit_GUI
         private GhMetadata Metadata = new GhMetadata();
         private string PakFilePath = "";
         private TimeSpan Duration = new TimeSpan();
+        private bool IsImport = false;
 
         private bool RecoverGameSettings = false;
 
@@ -1324,7 +1326,7 @@ namespace GH_Toolkit_GUI
             }
             File.Move(audioPath, savePath, true);
         }
-        private GhMetadata PackageMetadata(bool doubleKick = false, float hopoValOverride = 500f)
+        private GhMetadata PackageMetadata(bool doubleKick = false, float hopoValOverride = 500f, bool gh3Convert = false)
         {
 
             return new GhMetadata
@@ -1354,7 +1356,8 @@ namespace GH_Toolkit_GUI
                 BandVol = (float)gh3_band_vol.Value,
                 GtrVol = (float)gh3_gtr_vol.Value,
                 Countoff = countoff_select_gh3.Text,
-                HopoThreshold = hopoValOverride
+                HopoThreshold = hopoValOverride,
+                Gh3Convert = gh3Convert
             };
         }
         private GhMetadata PackageMetadataGhwtPlus(bool doubleKick = false)
@@ -1399,7 +1402,16 @@ namespace GH_Toolkit_GUI
         }
         private QBStruct.QBStructData GenerateGh3SongListEntry()
         {
-            var songListEntry = PackageMetadata();
+            IsImport = midi_file_input_gh3.Text.ToLower().EndsWith(".q");
+            float hopoValOverride = 500f;
+
+            if (IsImport)
+            {
+                hopoValOverride = (float)NsHopoVal.Value;
+            }
+
+
+            var songListEntry = PackageMetadata(false, hopoValOverride, IsImport);
 
             return songListEntry.GenerateGh3SongListEntry(CurrentGame, CurrentPlatform);
         }
@@ -1627,9 +1639,12 @@ namespace GH_Toolkit_GUI
         }
         private void CreateConsolePackage()
         {
+            
             if (CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA)
             {
-                Metadata = PackageMetadata();
+                IsImport = midi_file_input_gh3.Text.ToLower().EndsWith(".q");
+                float hopoValOverride = IsImport ? (float)NsHopoVal.Value : 500f;
+                Metadata = PackageMetadata(false, hopoValOverride, IsImport);
             }
 
             Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
@@ -2224,10 +2239,12 @@ namespace GH_Toolkit_GUI
         }
         private async void compile_pak_button_Click(object sender, EventArgs e)
         {
+            IsImport = false;
             await TaskWithFilePathUpdates(CompilePaksAsync);
         }
         private async void compile_all_button_Click(object sender, EventArgs e)
         {
+            IsImport = false;
             await TaskWithFilePathUpdates(CompileAll);
         }
         private async Task TaskWithFilePathUpdates(Func<Task> action)
