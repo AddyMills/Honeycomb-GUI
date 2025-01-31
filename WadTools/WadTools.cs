@@ -6,6 +6,7 @@ namespace GH_Toolkit_GUI
 {
     public partial class WadTools : Form
     {
+        private UserPreferences Pref = UserPreferences.Default;
         public WadTools()
         {
             InitializeComponent();
@@ -126,5 +127,10 @@ namespace GH_Toolkit_GUI
             await Task.Run(() => CompileWADFile(wadFolderToCompile.Text, false));
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Pref.RecompileQb = checkBox1.Checked;
+            Pref.Save();
+        }
     }
 }

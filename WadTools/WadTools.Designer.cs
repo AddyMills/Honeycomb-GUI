@@ -42,6 +42,7 @@
             openPakFile = new OpenFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
             savePakFile = new SaveFileDialog();
+            checkBox1 = new CheckBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -116,6 +117,7 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(checkBox1);
             tabPage2.Controls.Add(button6);
             tabPage2.Controls.Add(button3);
             tabPage2.Controls.Add(wadFolderToCompile);
@@ -175,6 +177,19 @@
             openPakFile.CheckFileExists = false;
             openPakFile.FileName = "openFileDialog1";
             // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Checked = true;
+            checkBox1.CheckState = CheckState.Checked;
+            checkBox1.Location = new Point(3, 157);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(140, 19);
+            checkBox1.TabIndex = 22;
+            checkBox1.Text = "Recompile qb pak file";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            // 
             // WadTools
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -207,5 +222,6 @@
         private Button extractButton;
         private Button button6;
         private SaveFileDialog savePakFile;
+        private CheckBox checkBox1;
     }
 }

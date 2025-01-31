@@ -47,5 +47,8 @@
     <Setting Name="PreferredConsole" Type="System.String" Scope="User">
       <Value Profile="(Default)">Xbox 360</Value>
     </Setting>
+    <Setting Name="RecompileQb" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -202,5 +202,17 @@ namespace GH_Toolkit_GUI {
                 this["PreferredConsole"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RecompileQb {
+            get {
+                return ((bool)(this["RecompileQb"]));
+            }
+            set {
+                this["RecompileQb"] = value;
+            }
+        }
     }
 }
