@@ -93,7 +93,7 @@ namespace GH_Toolkit_GUI
             }
         }
 
-        private void extractWad_Click(object sender, EventArgs e)
+        private async void extractWad_Click(object sender, EventArgs e)
         {
             string folderPath = Path.GetDirectoryName(wadFile.Text);
             string extractPath = Path.Combine(folderPath, "WAD Extract");
@@ -118,12 +118,12 @@ namespace GH_Toolkit_GUI
             }
 
             List<HedEntry> HedFiles = ReadHEDFile(File.ReadAllBytes(hedPath));
-            ExtractWADFile(HedFiles, File.ReadAllBytes(wadPath), extractPath, false);
+            await Task.Run(() => ExtractWADFile(HedFiles, File.ReadAllBytes(wadPath), extractPath, false));
         }
 
-        private void compileWad_Click(object sender, EventArgs e)
+        private async void compileWad_Click(object sender, EventArgs e)
         {
-            CompileWADFile(wadFolderToCompile.Text, false);
+            await Task.Run(() => CompileWADFile(wadFolderToCompile.Text, false));
         }
 
     }

@@ -138,7 +138,24 @@ namespace GH_Toolkit_GUI
             pakFileSave.Text = $"{pakFolderToCompile.Text}{extension}";
         }
 
-        private void extractPak_Click(object sender, EventArgs e)
+        private async Task ExtractPAK()
+        {
+            List<string> files = GetFilesFromFolder(pakFilesFolder.Text);
+
+            foreach (string file in files)
+            {
+                try
+                {
+                    await Task.Run(() => ProcessPAKFromFile(file, !convQ.Checked));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Extraction failed: {ex.Message}");
+                }
+            }
+        }
+
+        private async void extractPak_Click(object sender, EventArgs e)
         {
             if (pakFilesFolder.Text == "" || (!Directory.Exists(pakFilesFolder.Text) && !File.Exists(pakFilesFolder.Text)))
             {
@@ -147,24 +164,11 @@ namespace GH_Toolkit_GUI
             }
             else
             {
-
-                List<string> files = GetFilesFromFolder(pakFilesFolder.Text);
-
-                foreach (string file in files)
-                {
-                    try
-                    {
-                        ProcessPAKFromFile(file, !convQ.Checked);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Extraction failed: {ex.Message}");
-                    }
-                }
+                await ExtractPAK();
             }
         }
 
-        private void compilePak_Click(object sender, EventArgs e)
+        private async Task CompilePak() 
         {
             if (pakFolderToCompile.Text == "" || !Directory.Exists(pakFolderToCompile.Text))
             {
@@ -183,34 +187,46 @@ namespace GH_Toolkit_GUI
             bool isQb = folderPath == "QB";
             bool split = (isQb && console != "WII") ? true : splitPab.Checked;
             PakCompiler pakCompiler = new PakCompiler(game, console, assetContext, false, split);
-            var (pak, pab) = pakCompiler.CompilePAK(pakFolderToCompile.Text);
-            string pakPath = pakFileSave.Text;
-            string pabPath = pakPath.Replace(".pak", ".pab");
-            try
+
+            //var (pak, pab) = pakCompiler.CompilePAK(pakFolderToCompile.Text);
+            await Task.Run(() =>
             {
-                if (pab != null)
+                var (pak, pab) = pakCompiler.CompilePAK(pakFolderToCompile.Text);
+            
+                string pakPath = pakFileSave.Text;
+                string pabPath = pakPath.Replace(".pak", ".pab");
+                try
                 {
-                    using (FileStream pakFile = new FileStream(pakPath, FileMode.Create, FileAccess.Write))
-                    using (FileStream pabFile = new FileStream(pabPath, FileMode.Create, FileAccess.Write))
+                    if (pab != null)
                     {
-                        pakFile.Write(pak);
-                        pabFile.Write(pab);
+                        using (FileStream pakFile = new FileStream(pakPath, FileMode.Create, FileAccess.Write))
+                        using (FileStream pabFile = new FileStream(pabPath, FileMode.Create, FileAccess.Write))
+                        {
+                            pakFile.Write(pak);
+                            pabFile.Write(pab);
+                        }
                     }
+                    else
+                    {
+                        using (FileStream pakFile = new FileStream(pakPath, FileMode.Create, FileAccess.Write))
+                        {
+                            pakFile.Write(pak);
+                            pakFile.Write(pab);
+                        }
+                    }
+                    Console.WriteLine("PAK compiled successfully.");
                 }
-                else
+                catch (Exception ex)
                 {
-                    using (FileStream pakFile = new FileStream(pakPath, FileMode.Create, FileAccess.Write))
-                    {
-                        pakFile.Write(pak);
-                        pakFile.Write(pab);
-                    }
+                    Console.WriteLine($"Compile failed: {ex.Message}");
                 }
-                Console.WriteLine("PAK compiled successfully.");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Compile failed: {ex.Message}");
-            }
+            );
+        }
+
+        private async void compilePak_Click(object sender, EventArgs e)
+        {
+            await CompilePak();
         }
 
         private string SetConsole()
