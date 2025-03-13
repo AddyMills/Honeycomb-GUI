@@ -1077,10 +1077,11 @@ namespace GH_Toolkit_GUI
         }
         private void CreateConsoleFolder()
         {
-            if (!Directory.Exists(ConsoleCompile))
+            if (Directory.Exists(ConsoleCompile))
             {
-                Directory.CreateDirectory(ConsoleCompile);
+                Directory.Delete(ConsoleCompile, true);
             }
+            Directory.CreateDirectory(ConsoleCompile);
         }
         private void ReplaceGh3PakFiles()
         {
