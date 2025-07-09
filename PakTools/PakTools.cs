@@ -1,5 +1,6 @@
 using GH_Toolkit_Core.PAK;
 using static GH_Toolkit_Core.PAK.PAK;
+using static GH_Toolkit_Core.Methods.GlobalHelpers;
 
 
 namespace GH_Toolkit_GUI
@@ -182,6 +183,7 @@ namespace GH_Toolkit_GUI
                 return;
             }
             string console = SetConsole();
+            string extension = GetConsoleExtension(console);
             string? assetContext = assetContextText.Text == "" ? null : assetContextText.Text;
             string folderPath = Path.GetDirectoryName(pakFolderToCompile.Text).ToUpper();
             bool isQb = folderPath == "QB";
@@ -191,20 +193,26 @@ namespace GH_Toolkit_GUI
             //var (pak, pab) = pakCompiler.CompilePAK(pakFolderToCompile.Text);
             await Task.Run(() =>
             {
-                var (pak, pab) = pakCompiler.CompilePAK(pakFolderToCompile.Text);
+                var (pak, pab, qsStrings) = pakCompiler.CompilePAK(pakFolderToCompile.Text);
             
                 string pakPath = pakFileSave.Text;
                 string pabPath = pakPath.Replace(".pak", ".pab");
+                string qsPath = pakPath.Replace(".pak", "_qs.pak");
                 try
                 {
                     if (pab != null)
                     {
+                        if (qsStrings != null)
+                        {
+                            MakeQsFilesForSplitPak(pakFolderToCompile.Text, folderPath, console, game, qsStrings, false);
+                        }
                         using (FileStream pakFile = new FileStream(pakPath, FileMode.Create, FileAccess.Write))
                         using (FileStream pabFile = new FileStream(pabPath, FileMode.Create, FileAccess.Write))
                         {
                             pakFile.Write(pak);
                             pabFile.Write(pab);
                         }
+
                     }
                     else
                     {
