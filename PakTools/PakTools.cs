@@ -202,7 +202,7 @@ namespace GH_Toolkit_GUI
                 {
                     if (pab != null)
                     {
-                        if (qsStrings != null)
+                        if (qsStrings != null && game != "GH3" && game != "GHA")
                         {
                             MakeQsFilesForSplitPak(pakFolderToCompile.Text, folderPath, console, game, qsStrings, false);
                         }
