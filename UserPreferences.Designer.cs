@@ -214,5 +214,41 @@ namespace GH_Toolkit_GUI {
                 this["RecompileQb"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DlcName {
+            get {
+                return ((bool)(this["DlcName"]));
+            }
+            set {
+                this["DlcName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CompileToFolder {
+            get {
+                return ((bool)(this["CompileToFolder"]));
+            }
+            set {
+                this["CompileToFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Gh3Plus {
+            get {
+                return ((bool)(this["Gh3Plus"]));
+            }
+            set {
+                this["Gh3Plus"] = value;
+            }
+        }
     }
 }
