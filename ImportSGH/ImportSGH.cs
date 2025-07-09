@@ -121,7 +121,7 @@ namespace GH_Toolkit_GUI
 
                 if (File.Exists(sectionPath))
                 {
-                    var qbFile = QB.ParseQFromFile(sectionPath);
+                    var (qbFile, _) = QB.ParseQFromFile(sectionPath);
                     sectionDict = QB.QbEntryDict(qbFile);  
                 }
 
