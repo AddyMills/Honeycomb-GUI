@@ -151,6 +151,16 @@ namespace GH_Toolkit_GUI
             public int drumsTier { get; set; } = 1;
             [DefaultValue(1)]
             public int vocalsTier { get; set; } = 1;
+            [DefaultValue(0)]
+            public int guitarCareerTier { get; set; } = 0;
+            [DefaultValue(0)]
+            public int bassCareerTier { get; set; } = 0;
+            [DefaultValue(0)]
+            public int drumsCareerTier { get; set; } = 0;
+            [DefaultValue(0)]
+            public int vocalsCareerTier { get; set; } = 0;
+            [DefaultValue(0)]
+            public int bandCareerTier { get; set; } = 0;
             public decimal gtrVolumeGh3 { get; set; } = 0;
             public decimal bandVolumeGh3 { get; set; } = 0;
             [DefaultValue(1)]
@@ -421,6 +431,11 @@ namespace GH_Toolkit_GUI
                 vSkeleton = vSkeletonSelect.Text,
                 useNewClips = useNewClipsCheck.Checked,
                 modernStrobes = modernStrobesCheck.Checked,
+                guitarCareerTier = (int)careerSortIndexG.Value,
+                bassCareerTier = (int)careerSortIndexB.Value,
+                drumsCareerTier = (int)careerSortIndexD.Value,
+                vocalsCareerTier = (int)careerSortIndexV.Value,
+                bandCareerTier = (int)careerSortIndexA.Value,
 
                 // WoR Tiers
                 bandTier = (int)bandTierValue.Value,
@@ -609,6 +624,11 @@ namespace GH_Toolkit_GUI
             modernStrobesCheck.Checked = data.modernStrobes;
             previewStartTime = data.previewStart;
             previewEndTime = data.previewEnd;
+            careerSortIndexG.Value = data.guitarCareerTier;
+            careerSortIndexB.Value = data.bassCareerTier;
+            careerSortIndexD.Value = data.drumsCareerTier;
+            careerSortIndexV.Value = data.vocalsCareerTier;
+            careerSortIndexA.Value = data.bandCareerTier;
             UpdatePreviewFields(); // This needs to be changed. Currently broken
             isProgrammaticChange = false;
 
@@ -671,7 +691,7 @@ namespace GH_Toolkit_GUI
                 }
                 else
                 {
-                    throw new Exception("Save file creation cancelled by user.");
+                    //throw new Exception("Save file creation cancelled by user.");
                 }
             }
         }
@@ -725,6 +745,21 @@ namespace GH_Toolkit_GUI
                 {
                     midi_file_input_gh3.Text = file;
                     midiFileInput.Text = file;
+                }
+                else if (Regex.IsMatch(file, chartRegexCh))
+                {
+                    if (midi_file_input_gh3.Text == string.Empty)
+                    {
+                        midi_file_input_gh3.Text = file;
+                        midiFileInput.Text = file;
+                    }
+                    else
+                    {
+                        if (Regex.IsMatch(midi_file_input_gh3.Text, midiRegexCh))
+                        {
+
+                        }
+                    }
                 }
             }
             var assignment = iniParser.AssignFiles(folderPath, "GH3");

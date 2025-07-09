@@ -39,8 +39,11 @@ namespace GH_Toolkit_GUI
         private string GH3Path;
         private string GHAPath;
         private string WtSongFolder;
+        private string WtSongFolderExpertPlus;
         private string ContentFolder;
+        private string ContentFolderExpertPlus;
         private string MusicFolder;
+        private string MusicFolderExpertPlus;
 
         // This is needed to force all numbers to use decimals with a period as the decimal separator
         private static CultureInfo Murica = new CultureInfo("en-US");
@@ -71,8 +74,9 @@ namespace GH_Toolkit_GUI
         private RadioButton lastCheckedRadioButton = null;
         private string audioFileFilter = "Audio files (*.mp3, *.ogg, *.flac, *.wav)|*.mp3;*.ogg;*.flac;*.wav|All files (*.*)|*.*";
         private string audioRegex = ".*\\.(mp3|ogg|flac|wav)$";
-        private string midiFileFilter = "Guitar Hero Note Files (*.mid, *.q)|*.mid;*.q|MIDI files (*.mid)|*.mid|Q files|*.q|All files (*.*)|*.*";
+        private string midiFileFilter = "Guitar Hero Note Files (*.mid, *.chart, *.q)|*.mid;*.chart;*.q|MIDI files (*.mid)|*.mid|CHART files (*.chart)|*.chart|Q files|*.q|All files (*.*)|*.*";
         private string midiRegexCh = ".*\\.mid$";
+        private string chartRegexCh = ".*\\.chart$";
         private string qFileFilter = "Q files (*.q)|*.q|All files (*.*)|*.*";
         private string ghprojFileFilter = "GHProj files (*.ghproj)|*.ghproj|All files (*.*)|*.*";
 
@@ -89,6 +93,7 @@ namespace GH_Toolkit_GUI
         private bool isLoading = false;
         private bool isExport = false;
         private bool isAudioCompile = false;
+        private bool compileExpertPlus = false;
         private UserPreferences Pref = UserPreferences.Default;
         private List<QB.QBItem> SongList = new List<QB.QBItem>();
         private string[] QsStrings = [];
@@ -98,6 +103,14 @@ namespace GH_Toolkit_GUI
         private bool IsImport = false;
 
         private bool RecoverGameSettings = false;
+
+        private Dictionary<string, int> WorldTourDiffs = new Dictionary<string, int>
+        {
+            {"guitar", 1 },
+            {"bass", 1 },
+            {"drums", 1 },
+            {"vocals", 1 }
+        };
 
         public CompileSong(string ghproj = "")
         {
@@ -294,7 +307,7 @@ namespace GH_Toolkit_GUI
                 { "song_data_gh3", song_data_tab_gh3 },
                 { "compile_tab", compile_tab },
                 { "wtde_settings", wtde_settings },
-                { "wor_settings", wor_settings }
+                { "gh5_settings", gh5_settings }
 
             };
         }
@@ -603,9 +616,10 @@ namespace GH_Toolkit_GUI
             {
                 compiler_tabs.TabPages.Add(wtde_settings);
             }
-            else if (CurrentGame == GAME_GHWOR)
+            else if (CurrentGame == GAME_GH5 || CurrentGame == GAME_GHWOR)
             {
-                compiler_tabs.TabPages.Add(wor_settings);
+                compiler_tabs.TabPages.Add(gh5_settings);
+                gh5_settings.Text = $"{CurrentGame} Settings";
             }
         }
         public string GetGame()
@@ -702,20 +716,6 @@ namespace GH_Toolkit_GUI
             {
                 return;
             }
-            if (CurrentPlatform == "PC")
-            {
-                if (CurrentGame == "GHWT" && sustainThreshold.Value > 0.44m && sustainThreshold.Value < 0.46m)
-                {
-                    sustainThreshold.Value = 0.50m;
-                }
-            }
-            else
-            {
-                if (sustainThreshold.Value > 0.49m && sustainThreshold.Value < 0.51m)
-                {
-                    sustainThreshold.Value = 0.45m;
-                }
-            }
         }
         private void PlatformSelect_CheckChanged(object sender, EventArgs e)
         {
@@ -740,7 +740,14 @@ namespace GH_Toolkit_GUI
                 SetConsoleChecksum();
                 dlcChecksumLabel.Visible = true;
                 dlcChecksum.Visible = true;
-                dlcChecksum.Text = ConsoleChecksum.ToString();
+                if (Pref.DlcName)
+                {
+                    dlcChecksum.Text = ConsoleChecksum.ToString();
+                }
+                else
+                {
+                    dlcChecksum.Text = song_checksum.Text;
+                }
             }
             else
             {
@@ -759,7 +766,7 @@ namespace GH_Toolkit_GUI
             }
 
         }
-            private void SelectFileFolder(object sender, EventArgs e)
+        private void SelectFileFolder(object sender, EventArgs e)
         {
             Button btn = sender as Button;
             if (btn != null && btn.Tag is Tuple<TextBox, string, string>)
@@ -1147,7 +1154,7 @@ namespace GH_Toolkit_GUI
         }
         private string GetSongChecksum()
         {
-            if (CurrentPlatform == "PC" || CurrentPlatform == "PS2")
+            if (CurrentPlatform == "PC" || CurrentPlatform == "PS2" || !Pref.DlcName)
             {
                 return song_checksum.Text;
             }
@@ -1163,7 +1170,9 @@ namespace GH_Toolkit_GUI
 
             string checksum = GetSongChecksum();
 
-            var (pakFile, doubleKick) = PAK.CreateSongPackage(
+            bool gh3Plus = Pref.Gh3Plus && CurrentGame == GAME_GH3 && CurrentPlatform == "PC";
+
+            var (pakFile, doubleKick, _) = PAK.CreateSongPackage(
                 midiPath: midi_file_input_gh3.Text,
                 savePath: compile_input.Text,
                 songName: checksum,
@@ -1179,7 +1188,8 @@ namespace GH_Toolkit_GUI
                 overrideBeat: use_beat_check.Checked,
                 hopoType: hopo_mode_select.SelectedIndex,
                 isSteven: vocal_gender_select_gh3.Text == "Steven Tyler",
-                gender: vocal_gender_select_gh3.Text);
+                gender: vocal_gender_select_gh3.Text,
+                gh3Plus: gh3Plus);
 
             if (isExport)
             {
@@ -1206,8 +1216,26 @@ namespace GH_Toolkit_GUI
             }
             else
             {
-                File.Move(pakFile, Path.Combine(ConsoleCompile, $"dlc{ConsoleChecksum}_song.pak"), true);
-                CreateConsoleFilesGh3();
+                string dlcChecksum;
+                if (Pref.DlcName)
+                {
+                    dlcChecksum = $"dlc{ConsoleChecksum}_song.pak";
+                    
+                }
+                else
+                {
+                    dlcChecksum = $"{checksum}_song.pak";
+                }
+                File.Move(pakFile, Path.Combine(ConsoleCompile, dlcChecksum), true);
+                if (!Pref.CompileToFolder)
+                {
+                    CreateConsoleFilesGh3();
+                }
+                else
+                {
+                    CreateConsoleFolderFilesGh3();
+                }
+
             }
             // Add code to delete the folder after processing eventually
         }
@@ -1218,10 +1246,16 @@ namespace GH_Toolkit_GUI
         }
         private void CompileGhwtPakFile()
         {
+            var diffs = new Dictionary<string, int>()
+            {
+                {"guitar", 1 },
+                {"bass", 1 },
+                {"drums", 1 },
+                {"vocals", 1 }
+            };
 
             string venue = GetVenue(venueSource.SelectedIndex);
-
-            var (pakFile, doubleKick) = PAK.CreateSongPackage(
+            var (pakFile, doubleKick, pakFileExPlus) = PAK.CreateSongPackage(
                 midiPath: midiFileInput.Text,
                 savePath: compile_input.Text,
                 songName: song_checksum.Text,
@@ -1235,19 +1269,37 @@ namespace GH_Toolkit_GUI
                 venueSource: venue,
                 overrideBeat: use_beat_check.Checked,
                 hopoType: hopo_mode_select.SelectedIndex,
-                easyOpens: easyOpenCheckbox.Checked);
+                easyOpens: easyOpenCheckbox.Checked,
+                diffs: diffs);
+
+            WorldTourDiffs = diffs;
+
+            if (pakFileExPlus != null)
+            {
+                compileExpertPlus = true;
+            }
 
             if (CurrentPlatform == "PC")
             {
                 WtSongFolder = Path.Combine(Pref.WtModsFolder, song_checksum.Text);
+                WtSongFolderExpertPlus = Path.Combine(Pref.WtModsFolder, $"{song_checksum.Text}_ExpertPlus");
                 ContentFolder = Path.Combine(WtSongFolder, "Content");
+                ContentFolderExpertPlus = Path.Combine(WtSongFolderExpertPlus, "Content");
                 MusicFolder = Path.Combine(ContentFolder, "Music");
+                MusicFolderExpertPlus = Path.Combine(ContentFolderExpertPlus, "Music");
+
                 string pakName = Path.GetFileName(pakFile);
-
                 Directory.CreateDirectory(MusicFolder);
-
                 File.Move(pakFile, Path.Combine(ContentFolder, $"a{pakName}"), true);
                 WriteWtdeIni(WtSongFolder);
+
+                if (compileExpertPlus)
+                {
+                    Directory.CreateDirectory(MusicFolderExpertPlus);
+                    File.Move(pakFileExPlus!, Path.Combine(ContentFolderExpertPlus, $"a{Path.GetFileName(pakFileExPlus)}"), true);
+                    WriteWtdeIni(WtSongFolderExpertPlus, true);
+                }
+
             }
             // Add code to delete the folder after processing eventually
         }
@@ -1262,7 +1314,7 @@ namespace GH_Toolkit_GUI
                 {"vocals", (int)vocalsTierValue.Value }
             };
 
-            (PakFilePath, var doubleKick) = PAK.CreateSongPackage(
+            (PakFilePath, var doubleKick, _) = PAK.CreateSongPackage(
                midiPath: midiFileInput.Text,
                savePath: compile_input.Text,
                songName: GetSongChecksum(),
@@ -1290,14 +1342,14 @@ namespace GH_Toolkit_GUI
 
             return true;
         }
-        private void WriteWtdeIni(string saveFolder)
+        private void WriteWtdeIni(string saveFolder, bool expertPlus = false)
         {
             var config = new IniParserConfiguration();
             config.AssigmentSpacer = "";
             var noSpaceParser = new IniParser.Parser.IniDataParser(config);
 
             var parser = new FileIniDataParser(noSpaceParser);
-            var ini = GenerateWtdeIni();
+            var ini = GenerateWtdeIni(expertPlus);
             var iniPath = Path.Combine(saveFolder, "song.ini");
             parser.WriteFile(iniPath, ini);
         }
@@ -1426,7 +1478,7 @@ namespace GH_Toolkit_GUI
         {
             return artist_text_select.Text == "As Made Famous By";
         }
-        private IniData GenerateWtdeIni()
+        private IniData GenerateWtdeIni(bool expertPlus = false)
         {
             var config = new IniParserConfiguration();
             config.AssigmentSpacer = "";
@@ -1435,15 +1487,21 @@ namespace GH_Toolkit_GUI
             IniData wtdeIni = new IniData();
             wtdeIni.Configuration = config;
             var modInfo = new SectionData("ModInfo");
-            modInfo.Keys.AddKey("Name", song_checksum.Text);
+            var songName = expertPlus ?
+                $"{song_checksum.Text}_ExpertPlus" :
+                song_checksum.Text;
+            var songTitle = expertPlus ?
+                $"{title_input.Text} (Expert+)" :
+                title_input.Text;
+            modInfo.Keys.AddKey("Name", songName);
             modInfo.Keys.AddKey("Description", "Generated with Addy's Song Compiler");
             modInfo.Keys.AddKey("Author", chart_author_input.Text);
             modInfo.Keys.AddKey("Version", "1");
 
 
             var songInfo = new SectionData("SongInfo");
-            songInfo.Keys.AddKey("Checksum", song_checksum.Text);
-            songInfo.Keys.AddKey("Title", title_input.Text);
+            songInfo.Keys.AddKey("Checksum", songName);
+            songInfo.Keys.AddKey("Title", songTitle);
             songInfo.Keys.AddKey("Artist", artist_input.Text);
             songInfo.Keys.AddKey("Year", year_input.Value.ToString("G0", Murica));
             songInfo.Keys.AddKey("ArtistText", GetArtistText());
@@ -1520,6 +1578,51 @@ namespace GH_Toolkit_GUI
                 songInfo.Keys.AddKey("ModernStrobes", "1");
             }
 
+            if (expertPlus)
+            {
+                songInfo.Keys.AddKey("HasDoubleBass", "1");
+                songInfo.Keys.AddKey("HideInSetlistG", "1");
+                songInfo.Keys.AddKey("HideInSetlistB", "1");
+                songInfo.Keys.AddKey("HideInSetlistV", "1");
+            }
+            else
+            {
+                int numZeroDiffs = 0;
+                foreach (string inst in WorldTourDiffs.Keys)
+                {
+                    if (WorldTourDiffs[inst] == 0)
+                    {
+                        songInfo.Keys.AddKey($"HideInSetlist{inst.ToUpper()[0]}", "1");
+                        numZeroDiffs++;
+                    }
+                }
+                if (numZeroDiffs == 3)
+                {
+                    songInfo.Keys.AddKey("HideInSetlistA", "1");
+                }
+            }
+
+            if (careerSortIndexG.Value > 0)
+            {
+                songInfo.Keys.AddKey("CareerSortIndexG", ((int)careerSortIndexG.Value).ToString());
+            }
+            if (careerSortIndexB.Value > 0)
+            {
+                songInfo.Keys.AddKey("CareerSortIndexB", ((int)careerSortIndexB.Value).ToString());
+            }
+            if (careerSortIndexV.Value > 0)
+            {
+                songInfo.Keys.AddKey("CareerSortIndexV", ((int)careerSortIndexV.Value).ToString());
+            }
+            if (careerSortIndexD.Value > 0)
+            {
+                songInfo.Keys.AddKey("CareerSortIndexD", ((int)careerSortIndexD.Value).ToString());
+            }
+            if (careerSortIndexA.Value > 0)
+            {
+                songInfo.Keys.AddKey("CareerSortIndexA", ((int)careerSortIndexA.Value).ToString());
+            }
+
             wtdeIni.Sections.Add(modInfo);
             wtdeIni.Sections.Add(songInfo);
 
@@ -1567,12 +1670,17 @@ namespace GH_Toolkit_GUI
         }
         private void CreateConsoleFilesGh3()
         {
+            string? overrideChecksum = !Pref.DlcName ? song_checksum.Text : null;
             var otherChecksum = $"download\\dl{ConsoleChecksum}.qb";
             Directory.CreateDirectory(ConsoleCompile);
-            CreateConsoleDownloadFilesGh3(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, [GenerateGh3SongListEntry()]);
+            CreateConsoleDownloadFilesGh3(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, [GenerateGh3SongListEntry()], overrideChecksum);
             //CreateConsoleDownloadScriptsGh3();
             // text pak is download\download_song{x}.qb where x is the checksum
             // other pak is download\dl{x}.qb where x is the checksum
+        }
+        private void CreateConsoleFolderFilesGh3()
+        {
+            CreateConsoleFolderGh3(GetSongChecksum(), CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, [GenerateGh3SongListEntry()]);
         }
 
         private void CreateConsoleFilesGh3Ps2()
@@ -1648,7 +1756,44 @@ namespace GH_Toolkit_GUI
                 Metadata = PackageMetadata(false, hopoValOverride, IsImport);
             }
 
-            Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
+
+            if (Pref.DlcName && !Pref.CompileToFolder)
+            {
+                Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
+            }
+            else
+            {
+                bool isPS3 = CurrentPlatform == CONSOLE_PS3;
+                string ext = isPS3 ? ".PS3" : ".xen";
+                foreach (var file in Directory.GetFiles(ConsoleCompile))
+                {
+                    var fileExt = Path.GetExtension(file);
+                    if (fileExt.ToLower() == ".q")
+                    {
+                        continue;
+                    }
+                    var newFile = Path.ChangeExtension(file, $"{fileExt}{ext}");
+                    // if isPS3 is true, make the file name all upper case, but only the file name
+                    if (isPS3)
+                    {
+                        var fileName = Path.GetFileName(newFile).ToUpperInvariant();
+                        newFile = Path.Combine(Path.GetDirectoryName(newFile), fileName);
+                    }
+
+                    File.Move(file, newFile, true);
+                }
+                // Rename the console folder to song compile
+                string consoleFolder = Path.GetDirectoryName(ConsoleCompile) ?? "";
+                if (!string.IsNullOrEmpty(consoleFolder) && Directory.Exists(consoleFolder))
+                {
+                    string newConsoleFolder = Path.Combine(consoleFolder, "Song Compile");
+                    if (Directory.Exists(newConsoleFolder))
+                    {
+                        Directory.Delete(newConsoleFolder, true);
+                    }
+                    Directory.Move(ConsoleCompile, newConsoleFolder);
+                }
+            }
         }
         private async Task CompileGh3Audio()
         {
@@ -1682,11 +1827,11 @@ namespace GH_Toolkit_GUI
             }
             else
             {
-                await CompileGh3ModernConsoles();
+                await CompileGh3AudioModernConsoles();
             }
 
         }
-        private async Task CompileGh3ModernConsoles()
+        private async Task CompileGh3AudioModernConsoles()
         {
             string fileName = GetSongChecksum();
             string gtrOutput = Path.Combine(compile_input.Text, $"{fileName}_guitar.mp3");
@@ -1758,7 +1903,7 @@ namespace GH_Toolkit_GUI
                 }
                 Console.WriteLine("Combining Audio...");
                 var (fsbOut, datOut) = fsb.CombineFSB3File(filesToProcess, fsbOutput);
-                if (isExport)
+                if (isExport || Pref.CompileToFolder)
                 {
                     File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
                     File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
@@ -1879,10 +2024,29 @@ namespace GH_Toolkit_GUI
 
                 if (CurrentPlatform == "PC" && !isAudioCompile)
                 {
-                    foreach (string file in fsbList)
+                    if (compileExpertPlus)
                     {
-                        File.Move(file, Path.Combine(MusicFolder, $"{Path.GetFileName(file)}.xen"), true);
+                        foreach (string fileEnd in new string[] {"_1", "_2", "_3", "_preview"})
+                        {
+                            string file = Path.Combine(compile_input.Text, $"{songChecksum}{fileEnd}.fsb");
+                            string fileName = Path.GetFileName(file);
+                            string fileSave = Path.Combine(MusicFolder, $"{fileName}.xen");
+                            string fileSaveExpertPlus = Path.Combine(MusicFolderExpertPlus, $"{songChecksum}_ExpertPlus{fileEnd}.fsb.xen");
+                            
+                            File.Copy(file, fileSave, true);
+                            File.Move(file, fileSaveExpertPlus, true);
+                            
+
+                        }
                     }
+                    else
+                    {
+                        foreach (string file in fsbList)
+                        {
+                            File.Move(file, Path.Combine(MusicFolder, $"{Path.GetFileName(file)}.xen"), true);
+                        }
+                    }
+
                 }
                 Console.WriteLine("Audio Compilation Complete!");
             }
@@ -1929,16 +2093,15 @@ namespace GH_Toolkit_GUI
 
             string lipSyncPath = gh3SkaFilesInput.Text;
             string skaPath = skaFilesInput.Text;
-            if (!Directory.Exists(skaFilesInput.Text))
-            {
-                skaFilesInput.Text = lipSyncPath + "-temp";
-                skaPath = skaFilesInput.Text;
-                Directory.CreateDirectory(skaPath);
-            }
 
             if (Directory.Exists(lipSyncPath))
             {
-
+                if (!Directory.Exists(skaFilesInput.Text))
+                {
+                    skaFilesInput.Text = lipSyncPath + "-temp";
+                    skaPath = skaFilesInput.Text;
+                    Directory.CreateDirectory(skaPath);
+                }
                 foreach (string file in Directory.GetFiles(lipSyncPath, "*.ska*", SearchOption.AllDirectories))
                 {
                     string relPath = Path.GetRelativePath(lipSyncPath, file);
@@ -1964,6 +2127,8 @@ namespace GH_Toolkit_GUI
             string compileText = compile_all_button.Text;
             compile_all_button.Text = COMPILING;
             DisableCloseButton();
+            compileExpertPlus = false;
+
             bool compileSuccess = false;
             bool pakSuccess = false;
             try
@@ -1997,7 +2162,17 @@ namespace GH_Toolkit_GUI
                     }
                     MoveGh5Files();
                     (SongList, QsStrings) = Metadata.GenerateGh5SongListEntry();
-                    CreateConsoleDownloadFilesGh5(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings, Metadata.PackageName);
+                    string? checksumOverride = null;
+                    if (Pref.DlcName && !Pref.CompileToFolder)
+                    {
+                        CreateConsoleDownloadFilesGh5(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings, Metadata.PackageName);
+                    }
+                    else
+                    {
+                        checksumOverride = GetSongChecksum();
+                        CreateConsoleFolderGh5(checksumOverride, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings);
+                    }
+                    
                 }
                 if (!isExport && compileSuccess && (CurrentPlatform == "PS3" || CurrentPlatform == platform_360.Text))
                 {
@@ -2020,6 +2195,7 @@ namespace GH_Toolkit_GUI
             }
             catch (Exception ex)
             {
+                compileSuccess = false;
                 HandleException(ex, "Compile Failed!");
             }
             finally
@@ -2150,10 +2326,19 @@ namespace GH_Toolkit_GUI
         {
             Directory.CreateDirectory(ConsoleCompile);
             string currCheck = GetSongChecksum();
-
+            bool dlcName = Pref.DlcName;
             int duration = 0;
 
-            File.Copy(PakFilePath, Path.Combine(ConsoleCompile, $"b{currCheck}_song.pak"), true);
+            string pakCheck = $"{currCheck}_song.pak";
+            string audioCheck = $"{currCheck}";
+
+            if (dlcName)
+            {
+                pakCheck = $"b{pakCheck}";
+                audioCheck = $"a{audioCheck}";
+            }
+
+            File.Move(PakFilePath, Path.Combine(ConsoleCompile, pakCheck), true);
             for (int i = 1; i < 4; i++)
             {
                 string audio = Path.Combine(compile_input.Text, $"{currCheck}_{i}.fsb");
@@ -2169,8 +2354,9 @@ namespace GH_Toolkit_GUI
                 }
                 var encryptString = Path.GetFileNameWithoutExtension(audio);
                 var encryptedAudio = EncryptDecrypt.EncryptFSB4(File.ReadAllBytes(audio), encryptString);
-                var savePath = Path.Combine(ConsoleCompile, $"a{currCheck}_{i}.fsb");
+                var savePath = Path.Combine(ConsoleCompile, $"{audioCheck}_{i}.fsb");
                 File.WriteAllBytes(savePath, encryptedAudio);
+                File.Delete(audio); // Delete the original file after copying
                 //File.Copy(audio, Path.Combine(ConsoleCompile, $"a{currCheck}_{i}.fsb"), true);
             }
             Metadata.Duration = duration;
@@ -2179,13 +2365,14 @@ namespace GH_Toolkit_GUI
                 throw new FileNotFoundException($"Missing preview audio file {currCheck}_preview.fsb for download file creation.");
             }
             var previewPath = Path.Combine(compile_input.Text, $"{currCheck}_preview.fsb");
-            var previewSave = Path.Combine(ConsoleCompile, $"a{currCheck}_preview.fsb");
+            var previewSave = Path.Combine(ConsoleCompile, $"{audioCheck}_preview.fsb");
             var previewEncryptString = Path.GetFileNameWithoutExtension(previewPath);
             File.WriteAllBytes(previewSave, EncryptDecrypt.EncryptFSB4(File.ReadAllBytes(previewPath), previewEncryptString));
+            File.Delete(previewPath); // Delete the original preview file after copying
         }
         private async Task CompilePaksAsync()
         {
-
+            compileExpertPlus = false;
             Console.WriteLine($"Compiling song for {CurrentGame}");
             SetConsoleChecksum();
             var time1 = DateTime.Now;
