@@ -101,7 +101,6 @@
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
@@ -156,12 +155,12 @@
             // 
             // OverrideBeatLines
             // 
-            OverrideBeatLines.Anchor = AnchorStyles.Left;
+            OverrideBeatLines.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             OverrideBeatLines.AutoSize = true;
-            OverrideBeatLines.Location = new Point(292, 54);
+            OverrideBeatLines.Location = new Point(292, 43);
             OverrideBeatLines.Margin = new Padding(3, 2, 3, 2);
             OverrideBeatLines.Name = "OverrideBeatLines";
-            OverrideBeatLines.Size = new Size(15, 14);
+            OverrideBeatLines.Size = new Size(15, 37);
             OverrideBeatLines.TabIndex = 15;
             OverrideBeatLines.UseVisualStyleBackColor = true;
             // 
@@ -211,23 +210,23 @@
             // 
             // label5
             // 
+            label5.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             label5.AutoSize = true;
-            label5.Dock = DockStyle.Fill;
             label5.Location = new Point(3, 0);
             label5.Name = "label5";
-            label5.Size = new Size(283, 41);
+            label5.Size = new Size(166, 41);
             label5.TabIndex = 6;
             label5.Text = "Show Compile Success Popup";
             label5.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // CompilePopup
             // 
+            CompilePopup.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             CompilePopup.AutoSize = true;
-            CompilePopup.Dock = DockStyle.Fill;
             CompilePopup.Location = new Point(292, 2);
             CompilePopup.Margin = new Padding(3, 2, 3, 2);
             CompilePopup.Name = "CompilePopup";
-            CompilePopup.Size = new Size(532, 37);
+            CompilePopup.Size = new Size(15, 37);
             CompilePopup.TabIndex = 1;
             CompilePopup.UseVisualStyleBackColor = true;
             // 
@@ -265,9 +264,9 @@
             label8.Anchor = AnchorStyles.None;
             label8.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(label8, 2);
-            label8.Location = new Point(280, 177);
+            label8.Location = new Point(279, 177);
             label8.Name = "label8";
-            label8.Size = new Size(267, 15);
+            label8.Size = new Size(268, 15);
             label8.TabIndex = 11;
             label8.Text = "Guitar Hero World Tour Definitive Edition Settings";
             label8.TextAlign = ContentAlignment.MiddleLeft;
@@ -364,11 +363,11 @@
             // 
             // label10
             // 
-            label10.Anchor = AnchorStyles.Left;
+            label10.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             label10.AutoSize = true;
-            label10.Location = new Point(3, 54);
+            label10.Location = new Point(3, 41);
             label10.Name = "label10";
-            label10.Size = new Size(183, 15);
+            label10.Size = new Size(183, 41);
             label10.TabIndex = 14;
             label10.Text = "Override Beat Lines (if applicable)";
             label10.TextAlign = ContentAlignment.MiddleLeft;
@@ -391,7 +390,7 @@
             label12.AutoSize = true;
             label12.Location = new Point(3, 328);
             label12.Name = "label12";
-            label12.Size = new Size(82, 41);
+            label12.Size = new Size(81, 41);
             label12.TabIndex = 17;
             label12.Text = "Onyx CLI Path";
             label12.TextAlign = ContentAlignment.MiddleLeft;
@@ -475,12 +474,12 @@
             label16.TabIndex = 25;
             label16.Text = "Enable GH3+ Settings for PC";
             // 
-            // gh3PlusCheckbox
+            // Gh3PlusCheckbox
             // 
             Gh3PlusCheckbox.Anchor = AnchorStyles.Left;
             Gh3PlusCheckbox.AutoSize = true;
             Gh3PlusCheckbox.Location = new Point(292, 587);
-            Gh3PlusCheckbox.Name = "gh3PlusCheckbox";
+            Gh3PlusCheckbox.Name = "Gh3PlusCheckbox";
             Gh3PlusCheckbox.Size = new Size(15, 14);
             Gh3PlusCheckbox.TabIndex = 26;
             Gh3PlusCheckbox.UseVisualStyleBackColor = true;
