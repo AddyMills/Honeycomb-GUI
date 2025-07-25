@@ -1797,152 +1797,78 @@ namespace GH_Toolkit_GUI
         }
         private async Task CompileGh3Audio()
         {
-            if (CurrentPlatform == CONSOLE_PS2)
+            int previewStart = previewStartTime;
+            int previewLength = previewEndTime;
+            if (gh3_set_end.Checked)
             {
-                var msv = new MSV();
-                string[] backingPaths = backing_input_gh3.Items.Cast<string>().ToArray();
-                string[] allPaths = backingPaths.Concat([guitar_input_gh3.Text, rhythm_input_gh3.Text]).ToArray();
-                string[] coopBackingPaths = coop_backing_input_gh3.Items.Cast<string>().ToArray();
-                string outputFolder = Path.Combine(compile_input.Text);
-
-                decimal previewStart = previewStartTime / 1000m;
-                decimal previewLength = previewEndTime / 1000m;
-                if (gh3_set_end.Checked)
-                {
-                    previewLength -= previewStart;
-                }
-                decimal fadeIn = UserPreferences.Default.PreviewFadeIn;
-                decimal fadeOut = UserPreferences.Default.PreviewFadeOut;
-                var previewSave = Path.Combine(outputFolder, "preview.wav");
-
-                var audioTask = msv.CreatePs2Msv(guitar_input_gh3.Text, rhythm_input_gh3.Text, backingPaths, coop_guitar_input_gh3.Text, coop_rhythm_input_gh3.Text, coopBackingPaths, outputFolder, 33075);
-                var previewTask = msv.MakePreviewPs2(allPaths, previewSave, previewStart, previewLength, fadeIn, fadeOut, previewVolumeGh3.Value, 33075);
-
-
-                await previewTask;
-
-                await msv.CreatePs2Preview(previewSave);
-
-                await audioTask;
-            }
-            else
-            {
-                await CompileGh3AudioModernConsoles();
+                previewLength -= previewStart;
             }
 
-        }
-        private async Task CompileGh3AudioModernConsoles()
-        {
+            string[] backingPaths = backing_input_gh3.Items.Cast<string>().ToArray();
+            string[] coopBackingPaths = coop_backing_input_gh3.Items.Cast<string>().ToArray();
+
+            decimal fadeIn = UserPreferences.Default.PreviewFadeIn;
+            decimal fadeOut = UserPreferences.Default.PreviewFadeOut;
             string fileName = GetSongChecksum();
-            string gtrOutput = Path.Combine(compile_input.Text, $"{fileName}_guitar.mp3");
-            string rhythmOutput = Path.Combine(compile_input.Text, $"{fileName}_rhythm.mp3");
-            string backingOutput = Path.Combine(compile_input.Text, $"{fileName}_song.mp3");
-            string coopGtrOutput = Path.Combine(compile_input.Text, $"{fileName}_coop_guitar.mp3");
-            string coopRhythmOutput = Path.Combine(compile_input.Text, $"{fileName}_coop_rhythm.mp3");
-            string coopBackingOutput = Path.Combine(compile_input.Text, $"{fileName}_coop_song.mp3");
-            string crowdOutput = Path.Combine(compile_input.Text, $"{fileName}_crowd.mp3");
-            string previewOutput = Path.Combine(compile_input.Text, $"{fileName}_preview.mp3");
-            string[] spFiles = { gtrOutput, rhythmOutput, backingOutput };
-            string[] coopFiles = { coopGtrOutput, coopRhythmOutput, coopBackingOutput };
-            var filesToProcess = new List<string>();
-            filesToProcess.AddRange(spFiles);
-            filesToProcess.AddRange(coopFiles);
-            filesToProcess.Add(crowdOutput);
-            filesToProcess.Add(previewOutput);
-            string fsbOutput = Path.Combine(compile_input.Text, GetSongChecksum());
+
+            var compiler = AudioCompiler.CreateGh3Compiler(
+                fileName,
+                compile_input.Text,
+                "Compile",
+                CurrentGame,
+                previewStart,
+                previewLength,
+                previewVolumeGh3.Value,
+                UserPreferences.Default.PreviewFadeIn,
+                UserPreferences.Default.PreviewFadeOut,
+                gh3_rendered_preview_check.Checked,
+                coop_audio_check.Checked,
+                guitar_input_gh3.Text,
+                rhythm_input_gh3.Text,
+                backingPaths,
+                crowd_input_gh3.Text,
+                preview_audio_input_gh3.Text,
+                coop_guitar_input_gh3.Text,
+                coop_rhythm_input_gh3.Text,
+                coopBackingPaths
+                );
             try
             {
-                Console.WriteLine("Compiling Audio...");
-                string[] backingPaths = backing_input_gh3.Items.Cast<string>().ToArray();
-
-                string[] coopBackingPaths = coop_backing_input_gh3.Items.Cast<string>().ToArray();
-
-                FSB fsb = new FSB();
-
-                Task gtrStem = fsb.ConvertToMp3(guitar_input_gh3.Text, gtrOutput);
-                Task rhythmStem = fsb.ConvertToMp3(rhythm_input_gh3.Text, rhythmOutput);
-                Task backingStem = fsb.MixFiles(backingPaths, backingOutput);
-
-                var tasksToAwait = new List<Task> { gtrStem, rhythmStem, backingStem };
-                if (CurrentGame == GAME_GHA && File.Exists(crowd_input_gh3.Text))
+                if (CurrentPlatform == CONSOLE_PS2)
                 {
-                    Task crowdStem = fsb.ConvertToMp3(crowd_input_gh3.Text, crowdOutput);
-                    tasksToAwait.Add(crowdStem);
-                }
-                if (coop_audio_check.Checked)
-                {
-                    Task coopGtrStem = fsb.ConvertToMp3(coop_guitar_input_gh3.Text, coopGtrOutput);
-                    Task coopRhythmStem = fsb.ConvertToMp3(coop_rhythm_input_gh3.Text, coopRhythmOutput);
-                    Task coopBackingStem = fsb.MixFiles(coopBackingPaths, coopBackingOutput);
-                    tasksToAwait.AddRange(new List<Task> { coopGtrStem, coopRhythmStem, coopBackingStem });
-                }
-
-
-                // Await all started tasks. This ensures all conversions are completed before moving on.
-                await Task.WhenAll(tasksToAwait.ToArray());
-
-                // Create the preview audio
-                if (gh3_rendered_preview_check.Checked && File.Exists(preview_audio_input_gh3.Text))
-                {
-                    Task previewStem = fsb.ConvertToMp3(preview_audio_input_gh3.Text, previewOutput);
-                    await previewStem;
+                    await compiler.GH3AudioCompilePs2();
                 }
                 else
                 {
-                    decimal previewStart = previewStartTime / 1000m;
-                    decimal previewLength = previewEndTime / 1000m;
-                    if (gh3_set_end.Checked)
+                
+                    await compiler.GH3AudioCompile();
+                    var (fsbOut, datOut) = compiler.getFsbDat();
+                    if (isExport || Pref.CompileToFolder)
                     {
-                        previewLength -= previewStart;
+                        File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
+                        File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
                     }
+                    else if (isAudioCompile)
+                    {
 
-                    decimal fadeIn = UserPreferences.Default.PreviewFadeIn;
-                    decimal fadeOut = UserPreferences.Default.PreviewFadeOut;
-                    Task previewStem = fsb.MakePreview(spFiles, previewOutput, previewStart, previewLength, fadeIn, fadeOut, previewVolumeGh3.Value);
-                    await previewStem;
+                    }
+                    else if (CurrentPlatform == "PC")
+                    {
+                        MoveToGh3MusicFolder(fsbOut);
+                        MoveToGh3MusicFolder(datOut);
+                    }
+                    else
+                    {
+                        File.Move(fsbOut, Path.Combine(ConsoleCompile, $"dlc{ConsoleChecksum}.fsb"), true);
+                        File.Move(datOut, Path.Combine(ConsoleCompile, $"dlc{ConsoleChecksum}.dat"), true);
+                    }
+                    Console.WriteLine("Audio Compilation Complete!");
                 }
-                Console.WriteLine("Combining Audio...");
-                var (fsbOut, datOut) = fsb.CombineFSB3File(filesToProcess, fsbOutput);
-                if (isExport || Pref.CompileToFolder)
-                {
-                    File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
-                    File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
-                }
-                else if (isAudioCompile)
-                {
-
-                }
-                else if (CurrentPlatform == "PC")
-                {
-                    MoveToGh3MusicFolder(fsbOut);
-                    MoveToGh3MusicFolder(datOut);
-                }
-                else if (CurrentPlatform == "PS2")
-                {
-
-                }
-                else
-                {
-                    File.Move(fsbOut, Path.Combine(ConsoleCompile, $"dlc{ConsoleChecksum}.fsb"), true);
-                    File.Move(datOut, Path.Combine(ConsoleCompile, $"dlc{ConsoleChecksum}.dat"), true);
-                }
-                Console.WriteLine("Audio Compilation Complete!");
             }
             catch (Exception ex)
             {
                 HandleException(ex, "Audio Compilation Failed!");
                 throw;
-            }
-            finally
-            {
-
-                foreach (string file in filesToProcess)
-                {
-                    if (File.Exists(file))
-                    {
-                        File.Delete(file);
-                    }
-                }
             }
         }
         private async Task CompileGhwtAudio(bool encrypt = false)
