@@ -1873,81 +1873,45 @@ namespace GH_Toolkit_GUI
         }
         private async Task CompileGhwtAudio(bool encrypt = false)
         {
+            int previewStart = previewStartTime;
+            int previewLength = previewEndTime;
+            if (setEndTime.Checked)
+            {
+                previewLength -= previewStart;
+            }
+
+            string[] backingPaths = backingInput.Items.Cast<string>().ToArray();
+
+            decimal fadeIn = UserPreferences.Default.PreviewFadeIn;
+            decimal fadeOut = UserPreferences.Default.PreviewFadeOut;
             string songChecksum = GetSongChecksum();
-            string drumsKickOutput = Path.Combine(compile_input.Text, $"{songChecksum}_drumsKick.mp3");
-            string drumsSnareOutput = Path.Combine(compile_input.Text, $"{songChecksum}_drumsSnare.mp3");
-            string drumsTomsOutput = Path.Combine(compile_input.Text, $"{songChecksum}_drumsToms.mp3");
-            string drumsCymbalOutput = Path.Combine(compile_input.Text, $"{songChecksum}_drumsCymbal.mp3");
 
-            string guitarOutput = Path.Combine(compile_input.Text, $"{songChecksum}_guitar.mp3");
-            string rhythmOutput = Path.Combine(compile_input.Text, $"{songChecksum}_rhythm.mp3");
-            string vocalsOutput = Path.Combine(compile_input.Text, $"{songChecksum}_vocals.mp3");
-
-            string crowdOutput = Path.Combine(compile_input.Text, $"{songChecksum}_crowd.mp3");
-            string backingOutput = Path.Combine(compile_input.Text, $"{songChecksum}_song.mp3");
-
-            string previewOutput = Path.Combine(compile_input.Text, $"{songChecksum}_preview.mp3");
-
-            string[] drumFiles = { drumsKickOutput, drumsSnareOutput, drumsTomsOutput, drumsCymbalOutput };
-            string[] otherFiles = { guitarOutput, rhythmOutput, vocalsOutput };
-            string[] backingFiles = { backingOutput, crowdOutput };
-
-            var filesToProcess = new List<string>();
-            filesToProcess.AddRange(drumFiles);
-            filesToProcess.AddRange(otherFiles);
-            filesToProcess.AddRange(backingFiles);
-            filesToProcess.Add(previewOutput);
-
-            string fsbOutput = Path.Combine(compile_input.Text, $"{songChecksum}");
+            var compiler = AudioCompiler.CreateGhwtCompiler(
+                songChecksum,
+                compile_input.Text,
+                "Compile",
+                CurrentGame,
+                previewStart,
+                previewLength,
+                previewVolume.Value,
+                UserPreferences.Default.PreviewFadeIn,
+                UserPreferences.Default.PreviewFadeOut,
+                renderedPreviewCheck.Checked,
+                guitarInput.Text,
+                bassInput.Text,
+                vocalsInput.Text,
+                kickInput.Text,
+                snareInput.Text,
+                cymbalsInput.Text,
+                tomsInput.Text,
+                backingPaths,
+                crowdInput.Text,
+                previewInput.Text
+                );
             try
             {
-                Console.WriteLine("Compiling Audio...");
-                //string[] backingPaths = backingInput.Items.Cast<string>().ToArray();
-                string[] backingPaths = backingInput.Items.Cast<string>()
-                    .ToArray();
-
-                FSB fsb = new FSB();
-
-                Task drums1Stem = fsb.ConvertToMp3(kickInput.Text, drumsKickOutput);
-                Task drums2Stem = fsb.ConvertToMp3(snareInput.Text, drumsSnareOutput);
-                Task drums3Stem = fsb.ConvertToMp3(cymbalsInput.Text, drumsCymbalOutput);
-                Task drums4Stem = fsb.ConvertToMp3(tomsInput.Text, drumsTomsOutput);
-
-                Task guitarStem = fsb.ConvertToMp3(guitarInput.Text, guitarOutput);
-                Task rhythmStem = fsb.ConvertToMp3(bassInput.Text, rhythmOutput);
-                Task vocalsStem = fsb.ConvertToMp3(vocalsInput.Text, vocalsOutput);
-
-                Task backingStem = fsb.MixFiles(backingPaths, backingOutput);
-                Task crowdStem = fsb.ConvertToMp3(crowdInput.Text, crowdOutput);
-
-                var tasksToAwait = new List<Task> { drums1Stem, drums2Stem, drums3Stem, drums4Stem, guitarStem, rhythmStem, vocalsStem, backingStem, crowdStem };
-
-                // Await all started tasks. This ensures all conversions are completed before moving on.
-                await Task.WhenAll(tasksToAwait.ToArray());
-
-                // Create the preview audio
-                if (renderedPreviewCheck.Checked && File.Exists(previewInput.Text))
-                {
-                    Task previewStem = fsb.ConvertToMp3(previewInput.Text, previewOutput);
-                    await previewStem;
-                }
-                else
-                {
-                    string[] previewFiles = { drumsKickOutput, drumsSnareOutput, drumsCymbalOutput, drumsTomsOutput, guitarOutput, rhythmOutput, vocalsOutput, backingOutput };
-                    decimal previewStart = previewStartTime / 1000m;
-                    decimal previewLength = previewEndTime / 1000m;
-                    if (setEndTime.Checked)
-                    {
-                        previewLength -= previewStart;
-                    }
-                    decimal fadeIn = UserPreferences.Default.PreviewFadeIn;
-                    decimal fadeOut = UserPreferences.Default.PreviewFadeOut;
-                    Task previewStem = fsb.MakePreview(previewFiles, previewOutput, previewStart, previewLength, fadeIn, fadeOut, previewVolume.Value);
-                    await previewStem;
-                }
-                Console.WriteLine("Combining Audio...");
-                var fsbList = fsb.CombineFSB4File(drumFiles, otherFiles, backingFiles, [previewOutput], fsbOutput);
-
+                await compiler.GHWTAudioCompile(encrypt);
+                var fsbList = compiler.getFsbList();
                 if (CurrentPlatform == "PC" && !isAudioCompile)
                 {
                     if (compileExpertPlus)
@@ -1961,8 +1925,6 @@ namespace GH_Toolkit_GUI
                             
                             File.Copy(file, fileSave, true);
                             File.Move(file, fileSaveExpertPlus, true);
-                            
-
                         }
                     }
                     else
@@ -1980,16 +1942,6 @@ namespace GH_Toolkit_GUI
             {
                 HandleException(ex, "Audio Compilation Failed!");
                 throw;
-            }
-            finally
-            {
-                foreach (string file in filesToProcess)
-                {
-                    if (File.Exists(file))
-                    {
-                        File.Delete(file);
-                    }
-                }
             }
         }
         private int GetAudioLength()

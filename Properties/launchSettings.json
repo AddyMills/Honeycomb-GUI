@@ -1,8 +1,7 @@
 {
   "profiles": {
     "GH-Toolkit-GUI": {
-      "commandName": "Project",
-      "commandLineArgs": "\"D:\\Guitar Hero\\Customs Testing\\Falling in Reverse - Ronald (feat. Tech N9ne, Alex Terrible) (FigNeutered)\\ronald.ghproj\""
+      "commandName": "Project"
     }
   }
 }
