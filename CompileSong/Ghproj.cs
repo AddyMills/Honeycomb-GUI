@@ -540,7 +540,7 @@ namespace GH_Toolkit_GUI
             compile_input.Text = "";
             if (Directory.Exists(data.compilePath))
             {
-            compile_input.Text = data.compilePath;
+                compile_input.Text = data.compilePath;
             }
 
             // Metadata
@@ -834,8 +834,8 @@ namespace GH_Toolkit_GUI
             if (songData.HopoFrequency.HasValue)
                 HmxHopoVal.Value = songData.HopoFrequency.Value;
 
-            previewStartTime = songData.PreviewStartTime ?? previewStartTime;
-            previewEndTime = songData.PreviewEndTime ?? previewEndTime;
+            previewStartTime = songData.PreviewStartTime;
+            previewEndTime = songData.PreviewEndTime == 0 ? previewStartTime + 30000 : previewEndTime;
 
         }
 
