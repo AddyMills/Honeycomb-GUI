@@ -92,6 +92,8 @@ namespace GH_Toolkit_GUI
             [DefaultValue("")]
             public string gameCategory { get; set; } = "";
             [DefaultValue("")]
+            public string ghprojFromLoad { get; set; } = "";
+            [DefaultValue("")]
             public string bandWtde { get; set; } = "";
             [DefaultValue("Default")]
             public string gSkeleton { get; set; } = "";
@@ -534,8 +536,12 @@ namespace GH_Toolkit_GUI
             song_script_input_gh3.Text = data.songScriptPathGh3;
 
             // Other Settings
+            project_input.Text = data.ghprojFromLoad;
+            compile_input.Text = "";
+            if (Directory.Exists(data.compilePath))
+            {
             compile_input.Text = data.compilePath;
-            project_input.Text = data.projectPath;
+            }
 
             // Metadata
             artist_text_select.SelectedIndex = data.artistText;
@@ -702,7 +708,10 @@ namespace GH_Toolkit_GUI
                 isLoading = true;
                 string json = File.ReadAllText(filePath);
                 SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
-
+                if (Directory.GetParent(filePath).Name != "Templates")
+                {
+                    data.ghprojFromLoad = filePath;
+                }
                 LoadSaveData(data);
                 isLoading = false;
             }
