@@ -41,7 +41,6 @@ namespace GH_Toolkit_GUI
             GhaFolderPath.Text = Pref.GhaFolderPath;
             OnyxCliFolder.Text = Pref.OnyxCliPath;
             PreferredConsoleSetting.Text = Pref.PreferredConsole;
-            CompileFolderDefault.Checked = Pref.CompileToFolder;
             DlcShortnameDefault.SelectedIndex = Pref.DlcName ? 0 : 1; // 0 = dlc123456789, 1 = alphanumeric
             Gh3PlusCheckbox.Checked = Pref.Gh3Plus;
 
@@ -57,7 +56,6 @@ namespace GH_Toolkit_GUI
             Pref.WtModsFolder = WtModsFolder.Text;
             Pref.OnyxCliPath = OnyxCliFolder.Text;
             Pref.PreferredConsole = PreferredConsoleSetting.Text;
-            Pref.CompileToFolder = CompileFolderDefault.Checked;
             Pref.DlcName = DlcShortnameDefault.SelectedIndex == 0; // 0 = dlc123456789, 1 = alphanumeric
             Pref.Gh3Plus = Gh3PlusCheckbox.Checked;
 
@@ -93,7 +91,6 @@ namespace GH_Toolkit_GUI
             OnyxCliFolder.TextChanged += (s, e) => SetUnsavedChanges(true);
             PreferredConsoleSetting.TextChanged += (s, e) => SetUnsavedChanges(true);
             SongManagerDeleteSongs.CheckedChanged += (s, e) => SetUnsavedChanges(true);
-            CompileFolderDefault.CheckedChanged += (s, e) => SetUnsavedChanges(true);
             DlcShortnameDefault.SelectedIndexChanged += (s, e) => SetUnsavedChanges(true);
             Gh3PlusCheckbox.CheckedChanged += (s, e) => SetUnsavedChanges(true);
         }

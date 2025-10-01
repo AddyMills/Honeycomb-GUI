@@ -55,10 +55,8 @@
             OnyxCliFolder = new TextBox();
             label13 = new Label();
             PreferredConsoleSetting = new ComboBox();
-            label14 = new Label();
             label15 = new Label();
             DlcShortnameDefault = new ComboBox();
-            CompileFolderDefault = new CheckBox();
             label16 = new Label();
             Gh3PlusCheckbox = new CheckBox();
             tabPage2 = new TabPage();
@@ -124,10 +122,8 @@
             tableLayoutPanel1.Controls.Add(OnyxCliFolder, 1, 8);
             tableLayoutPanel1.Controls.Add(label13, 0, 3);
             tableLayoutPanel1.Controls.Add(PreferredConsoleSetting, 1, 3);
-            tableLayoutPanel1.Controls.Add(label14, 0, 12);
             tableLayoutPanel1.Controls.Add(label15, 0, 13);
             tableLayoutPanel1.Controls.Add(DlcShortnameDefault, 1, 13);
-            tableLayoutPanel1.Controls.Add(CompileFolderDefault, 1, 12);
             tableLayoutPanel1.Controls.Add(label16, 0, 14);
             tableLayoutPanel1.Controls.Add(Gh3PlusCheckbox, 1, 14);
             tableLayoutPanel1.Location = new Point(3, 2);
@@ -264,9 +260,9 @@
             label8.Anchor = AnchorStyles.None;
             label8.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(label8, 2);
-            label8.Location = new Point(279, 177);
+            label8.Location = new Point(280, 177);
             label8.Name = "label8";
-            label8.Size = new Size(268, 15);
+            label8.Size = new Size(267, 15);
             label8.TabIndex = 11;
             label8.Text = "Guitar Hero World Tour Definitive Edition Settings";
             label8.TextAlign = ContentAlignment.MiddleLeft;
@@ -390,7 +386,7 @@
             label12.AutoSize = true;
             label12.Location = new Point(3, 328);
             label12.Name = "label12";
-            label12.Size = new Size(81, 41);
+            label12.Size = new Size(82, 41);
             label12.TabIndex = 17;
             label12.Text = "Onyx CLI Path";
             label12.TextAlign = ContentAlignment.MiddleLeft;
@@ -423,16 +419,6 @@
             PreferredConsoleSetting.Size = new Size(532, 23);
             PreferredConsoleSetting.TabIndex = 20;
             // 
-            // label14
-            // 
-            label14.Anchor = AnchorStyles.Left;
-            label14.AutoSize = true;
-            label14.Location = new Point(3, 505);
-            label14.Name = "label14";
-            label14.Size = new Size(159, 15);
-            label14.TabIndex = 21;
-            label14.Text = "Compile to folder by default:";
-            // 
             // label15
             // 
             label15.Anchor = AnchorStyles.Left;
@@ -453,16 +439,6 @@
             DlcShortnameDefault.Name = "DlcShortnameDefault";
             DlcShortnameDefault.Size = new Size(532, 23);
             DlcShortnameDefault.TabIndex = 23;
-            // 
-            // CompileFolderDefault
-            // 
-            CompileFolderDefault.Anchor = AnchorStyles.Left;
-            CompileFolderDefault.AutoSize = true;
-            CompileFolderDefault.Location = new Point(292, 505);
-            CompileFolderDefault.Name = "CompileFolderDefault";
-            CompileFolderDefault.Size = new Size(15, 14);
-            CompileFolderDefault.TabIndex = 24;
-            CompileFolderDefault.UseVisualStyleBackColor = true;
             // 
             // label16
             // 
@@ -595,10 +571,8 @@
         private TextBox OnyxCliFolder;
         private Label label13;
         private ComboBox PreferredConsoleSetting;
-        private Label label14;
         private Label label15;
         private ComboBox DlcShortnameDefault;
-        private CheckBox CompileFolderDefault;
         private Label label16;
         private CheckBox Gh3PlusCheckbox;
     }
