@@ -330,6 +330,8 @@
             compile_select = new Button();
             project_select = new Button();
             compile_input = new TextBox();
+            label79 = new Label();
+            album_input = new TextBox();
             compiler_tabs.SuspendLayout();
             metadata_tab.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -439,7 +441,7 @@
             // 
             // import_from_other
             // 
-            import_from_other.Location = new Point(9, 392);
+            import_from_other.Location = new Point(9, 447);
             import_from_other.Name = "import_from_other";
             import_from_other.Size = new Size(229, 23);
             import_from_other.TabIndex = 2;
@@ -458,28 +460,31 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanel2.Controls.Add(title_label, 0, 0);
             tableLayoutPanel2.Controls.Add(artist_text_label, 0, 1);
-            tableLayoutPanel2.Controls.Add(label5, 0, 5);
-            tableLayoutPanel2.Controls.Add(label4, 0, 4);
+            tableLayoutPanel2.Controls.Add(label5, 0, 6);
+            tableLayoutPanel2.Controls.Add(label4, 0, 5);
             tableLayoutPanel2.Controls.Add(label3, 0, 3);
-            tableLayoutPanel2.Controls.Add(label6, 0, 6);
-            tableLayoutPanel2.Controls.Add(label7, 0, 7);
+            tableLayoutPanel2.Controls.Add(label6, 0, 7);
+            tableLayoutPanel2.Controls.Add(label7, 0, 8);
             tableLayoutPanel2.Controls.Add(title_input, 1, 0);
             tableLayoutPanel2.Controls.Add(artistTextCustom, 1, 2);
             tableLayoutPanel2.Controls.Add(artist_input, 1, 3);
-            tableLayoutPanel2.Controls.Add(cover_artist_input, 1, 5);
-            tableLayoutPanel2.Controls.Add(song_checksum, 1, 8);
-            tableLayoutPanel2.Controls.Add(chart_author_input, 1, 9);
+            tableLayoutPanel2.Controls.Add(cover_artist_input, 1, 6);
+            tableLayoutPanel2.Controls.Add(song_checksum, 1, 9);
+            tableLayoutPanel2.Controls.Add(chart_author_input, 1, 10);
             tableLayoutPanel2.Controls.Add(artist_text_select, 1, 1);
-            tableLayoutPanel2.Controls.Add(genre_input, 1, 6);
-            tableLayoutPanel2.Controls.Add(label8, 0, 8);
-            tableLayoutPanel2.Controls.Add(label9, 0, 9);
-            tableLayoutPanel2.Controls.Add(year_input, 1, 4);
-            tableLayoutPanel2.Controls.Add(isCover, 2, 4);
-            tableLayoutPanel2.Controls.Add(coverLabel, 3, 4);
-            tableLayoutPanel2.Controls.Add(cover_year_input, 4, 4);
+            tableLayoutPanel2.Controls.Add(genre_input, 1, 7);
+            tableLayoutPanel2.Controls.Add(label8, 0, 9);
+            tableLayoutPanel2.Controls.Add(label9, 0, 10);
+            tableLayoutPanel2.Controls.Add(year_input, 1, 5);
+            tableLayoutPanel2.Controls.Add(isCover, 2, 5);
+            tableLayoutPanel2.Controls.Add(coverLabel, 3, 5);
+            tableLayoutPanel2.Controls.Add(cover_year_input, 4, 5);
+            tableLayoutPanel2.Controls.Add(label79, 0, 4);
+            tableLayoutPanel2.Controls.Add(album_input, 1, 4);
             tableLayoutPanel2.Location = new Point(9, 68);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 11;
+            tableLayoutPanel2.RowCount = 12;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
@@ -491,7 +496,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(609, 309);
+            tableLayoutPanel2.Size = new Size(609, 373);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // title_label
@@ -520,7 +525,7 @@
             // 
             label5.AutoSize = true;
             label5.Dock = DockStyle.Right;
-            label5.Location = new Point(46, 145);
+            label5.Location = new Point(46, 174);
             label5.Name = "label5";
             label5.Size = new Size(72, 29);
             label5.TabIndex = 5;
@@ -531,7 +536,7 @@
             // 
             label4.AutoSize = true;
             label4.Dock = DockStyle.Right;
-            label4.Location = new Point(86, 116);
+            label4.Location = new Point(86, 145);
             label4.Name = "label4";
             label4.Size = new Size(32, 29);
             label4.TabIndex = 3;
@@ -553,7 +558,7 @@
             // 
             label6.AutoSize = true;
             label6.Dock = DockStyle.Right;
-            label6.Location = new Point(77, 174);
+            label6.Location = new Point(77, 203);
             label6.Name = "label6";
             label6.Size = new Size(41, 29);
             label6.TabIndex = 6;
@@ -565,7 +570,7 @@
             label7.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             label7.BorderStyle = BorderStyle.Fixed3D;
             tableLayoutPanel2.SetColumnSpan(label7, 5);
-            label7.Location = new Point(3, 203);
+            label7.Location = new Point(3, 232);
             label7.Name = "label7";
             label7.Size = new Size(603, 2);
             label7.TabIndex = 7;
@@ -605,7 +610,7 @@
             cover_artist_input.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel2.SetColumnSpan(cover_artist_input, 4);
             cover_artist_input.Enabled = false;
-            cover_artist_input.Location = new Point(124, 148);
+            cover_artist_input.Location = new Point(124, 177);
             cover_artist_input.Name = "cover_artist_input";
             cover_artist_input.Size = new Size(482, 23);
             cover_artist_input.TabIndex = 11;
@@ -614,7 +619,8 @@
             // 
             song_checksum.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel2.SetColumnSpan(song_checksum, 4);
-            song_checksum.Location = new Point(124, 208);
+            song_checksum.Location = new Point(124, 237);
+            song_checksum.MaxLength = 30;
             song_checksum.Name = "song_checksum";
             song_checksum.Size = new Size(482, 23);
             song_checksum.TabIndex = 12;
@@ -623,7 +629,7 @@
             // 
             chart_author_input.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel2.SetColumnSpan(chart_author_input, 4);
-            chart_author_input.Location = new Point(124, 237);
+            chart_author_input.Location = new Point(124, 266);
             chart_author_input.Name = "chart_author_input";
             chart_author_input.Size = new Size(482, 23);
             chart_author_input.TabIndex = 13;
@@ -647,7 +653,7 @@
             tableLayoutPanel2.SetColumnSpan(genre_input, 4);
             genre_input.DropDownStyle = ComboBoxStyle.DropDownList;
             genre_input.FormattingEnabled = true;
-            genre_input.Location = new Point(124, 177);
+            genre_input.Location = new Point(124, 206);
             genre_input.Name = "genre_input";
             genre_input.Size = new Size(482, 23);
             genre_input.TabIndex = 15;
@@ -657,7 +663,7 @@
             // 
             label8.AutoSize = true;
             label8.Dock = DockStyle.Fill;
-            label8.Location = new Point(3, 205);
+            label8.Location = new Point(3, 234);
             label8.Name = "label8";
             label8.Size = new Size(115, 29);
             label8.TabIndex = 16;
@@ -668,7 +674,7 @@
             // 
             label9.AutoSize = true;
             label9.Dock = DockStyle.Fill;
-            label9.Location = new Point(3, 234);
+            label9.Location = new Point(3, 263);
             label9.Name = "label9";
             label9.Size = new Size(115, 29);
             label9.TabIndex = 17;
@@ -678,7 +684,7 @@
             // year_input
             // 
             year_input.Dock = DockStyle.Fill;
-            year_input.Location = new Point(124, 119);
+            year_input.Location = new Point(124, 148);
             year_input.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
             year_input.Minimum = new decimal(new int[] { 1900, 0, 0, 0 });
             year_input.Name = "year_input";
@@ -690,7 +696,7 @@
             // 
             isCover.AutoSize = true;
             isCover.Dock = DockStyle.Fill;
-            isCover.Location = new Point(245, 119);
+            isCover.Location = new Point(245, 148);
             isCover.Name = "isCover";
             isCover.Size = new Size(115, 23);
             isCover.TabIndex = 19;
@@ -703,7 +709,7 @@
             coverLabel.AutoSize = true;
             coverLabel.Dock = DockStyle.Fill;
             coverLabel.Enabled = false;
-            coverLabel.Location = new Point(366, 116);
+            coverLabel.Location = new Point(366, 145);
             coverLabel.Name = "coverLabel";
             coverLabel.Size = new Size(115, 29);
             coverLabel.TabIndex = 20;
@@ -715,7 +721,7 @@
             cover_year_input.Dock = DockStyle.Fill;
             cover_year_input.Enabled = false;
             cover_year_input.Increment = new decimal(new int[] { 0, 0, 0, 0 });
-            cover_year_input.Location = new Point(487, 119);
+            cover_year_input.Location = new Point(487, 148);
             cover_year_input.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
             cover_year_input.Minimum = new decimal(new int[] { 1900, 0, 0, 0 });
             cover_year_input.Name = "cover_year_input";
@@ -3526,6 +3532,7 @@
             // careerSortIndexA
             // 
             careerSortIndexA.Location = new Point(359, 18);
+            careerSortIndexA.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             careerSortIndexA.Name = "careerSortIndexA";
             careerSortIndexA.Size = new Size(83, 23);
             careerSortIndexA.TabIndex = 13;
@@ -3533,6 +3540,7 @@
             // careerSortIndexV
             // 
             careerSortIndexV.Location = new Point(270, 18);
+            careerSortIndexV.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             careerSortIndexV.Name = "careerSortIndexV";
             careerSortIndexV.Size = new Size(83, 23);
             careerSortIndexV.TabIndex = 12;
@@ -3540,6 +3548,7 @@
             // careerSortIndexD
             // 
             careerSortIndexD.Location = new Point(181, 18);
+            careerSortIndexD.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             careerSortIndexD.Name = "careerSortIndexD";
             careerSortIndexD.Size = new Size(83, 23);
             careerSortIndexD.TabIndex = 11;
@@ -3547,6 +3556,7 @@
             // careerSortIndexB
             // 
             careerSortIndexB.Location = new Point(92, 18);
+            careerSortIndexB.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             careerSortIndexB.Name = "careerSortIndexB";
             careerSortIndexB.Size = new Size(83, 23);
             careerSortIndexB.TabIndex = 10;
@@ -3604,7 +3614,7 @@
             // careerSortIndexG
             // 
             careerSortIndexG.Location = new Point(3, 18);
-            careerSortIndexG.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            careerSortIndexG.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
             careerSortIndexG.Name = "careerSortIndexG";
             careerSortIndexG.Size = new Size(83, 23);
             careerSortIndexG.TabIndex = 9;
@@ -3770,7 +3780,7 @@
             compile_pak_button.Name = "compile_pak_button";
             compile_pak_button.Size = new Size(114, 23);
             compile_pak_button.TabIndex = 6;
-            compile_pak_button.Text = "Compile Song PAK";
+            compile_pak_button.Text = "Compile to Folder";
             toolTip1.SetToolTip(compile_pak_button, "Compiles the song data only. Saves time by not needing to compile the audio.");
             compile_pak_button.UseVisualStyleBackColor = false;
             compile_pak_button.Click += compile_pak_button_Click;
@@ -3971,6 +3981,25 @@
             compile_input.Name = "compile_input";
             compile_input.Size = new Size(419, 23);
             compile_input.TabIndex = 2;
+            // 
+            // label79
+            // 
+            label79.Anchor = AnchorStyles.Right;
+            label79.AutoSize = true;
+            label79.Location = new Point(75, 123);
+            label79.Name = "label79";
+            label79.Size = new Size(43, 15);
+            label79.TabIndex = 22;
+            label79.Text = "Album";
+            // 
+            // album_input
+            // 
+            album_input.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel2.SetColumnSpan(album_input, 4);
+            album_input.Location = new Point(124, 119);
+            album_input.Name = "album_input";
+            album_input.Size = new Size(482, 23);
+            album_input.TabIndex = 23;
             // 
             // CompileSong
             // 
@@ -4388,5 +4417,7 @@
         private Label label77;
         private Label label78;
         private NumericUpDown careerSortIndexG;
+        private Label label79;
+        private TextBox album_input;
     }
 }
