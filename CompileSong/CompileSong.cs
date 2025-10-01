@@ -757,11 +757,9 @@ namespace GH_Toolkit_GUI
         }
         private void EnableCompileOnly()
         {
-            compile_pak_button.Enabled = false;
-            compile_pak_button.Text = "Disabled";
+            compile_pak_button.Text = "Compile to Folder";
             if (CurrentPlatform == CONSOLE_PS2 || CurrentPlatform == CONSOLE_WII || CurrentPlatform == CONSOLE_PC)
             {
-                compile_pak_button.Enabled = true;
                 compile_pak_button.Text = "Compile Song PAK";
             }
 
@@ -1154,7 +1152,13 @@ namespace GH_Toolkit_GUI
         }
         private string GetSongChecksum()
         {
-            if (CurrentPlatform == "PC" || CurrentPlatform == "PS2" || !Pref.DlcName)
+            bool isGh3orGha = CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA;
+
+            if (!isGh3orGha && !Pref.CompileToFolder)
+            {
+                return $"dlc{ConsoleChecksum}";
+            }
+            else if (CurrentPlatform == "PC" || CurrentPlatform == "PS2" || !Pref.DlcName)
             {
                 return song_checksum.Text;
             }
@@ -1282,7 +1286,7 @@ namespace GH_Toolkit_GUI
             if (CurrentPlatform == "PC")
             {
                 WtSongFolder = Path.Combine(Pref.WtModsFolder, song_checksum.Text);
-                WtSongFolderExpertPlus = Path.Combine(Pref.WtModsFolder, $"{song_checksum.Text}_ExpertPlus");
+                WtSongFolderExpertPlus = Path.Combine(Pref.WtModsFolder, $"{song_checksum.Text}X");
                 ContentFolder = Path.Combine(WtSongFolder, "Content");
                 ContentFolderExpertPlus = Path.Combine(WtSongFolderExpertPlus, "Content");
                 MusicFolder = Path.Combine(ContentFolder, "Music");
@@ -1488,7 +1492,7 @@ namespace GH_Toolkit_GUI
             wtdeIni.Configuration = config;
             var modInfo = new SectionData("ModInfo");
             var songName = expertPlus ?
-                $"{song_checksum.Text}_ExpertPlus" :
+                $"{song_checksum.Text}X" :
                 song_checksum.Text;
             var songTitle = expertPlus ?
                 $"{title_input.Text} (Expert+)" :
@@ -1748,8 +1752,8 @@ namespace GH_Toolkit_GUI
         }
         private void CreateConsolePackage()
         {
-            
-            if (CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA)
+            bool isGh3orGha = CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA;
+            if (isGh3orGha)
             {
                 IsImport = midi_file_input_gh3.Text.ToLower().EndsWith(".q");
                 float hopoValOverride = IsImport ? (float)NsHopoVal.Value : 500f;
@@ -1757,7 +1761,7 @@ namespace GH_Toolkit_GUI
             }
 
 
-            if (Pref.DlcName && !Pref.CompileToFolder)
+            if (!Pref.CompileToFolder)
             {
                 Metadata.CreateConsolePackage(CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, Pref.OnyxCliPath);
             }
@@ -1843,7 +1847,7 @@ namespace GH_Toolkit_GUI
                 
                     await compiler.GH3AudioCompile();
                     var (fsbOut, datOut) = compiler.getFsbDat();
-                    if (isExport || Pref.CompileToFolder)
+                    if (isExport || Pref.CompileToFolder || !Pref.DlcName)
                     {
                         File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
                         File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
@@ -1921,7 +1925,7 @@ namespace GH_Toolkit_GUI
                             string file = Path.Combine(compile_input.Text, $"{songChecksum}{fileEnd}.fsb");
                             string fileName = Path.GetFileName(file);
                             string fileSave = Path.Combine(MusicFolder, $"{fileName}.xen");
-                            string fileSaveExpertPlus = Path.Combine(MusicFolderExpertPlus, $"{songChecksum}_ExpertPlus{fileEnd}.fsb.xen");
+                            string fileSaveExpertPlus = Path.Combine(MusicFolderExpertPlus, $"{songChecksum}X{fileEnd}.fsb.xen");
                             
                             File.Copy(file, fileSave, true);
                             File.Move(file, fileSaveExpertPlus, true);
@@ -1972,7 +1976,7 @@ namespace GH_Toolkit_GUI
             string lipSyncPath = gh3SkaFilesInput.Text;
             string skaPath = skaFilesInput.Text;
 
-            if (Directory.Exists(lipSyncPath))
+            if (Directory.Exists(lipSyncPath) && lipSyncPath != string.Empty)
             {
                 if (!Directory.Exists(skaFilesInput.Text))
                 {
@@ -1998,12 +2002,18 @@ namespace GH_Toolkit_GUI
                 }
             }
         }
+        private void ChangeCompileButtonsState(bool state)
+        {
+            compile_all_button.Enabled = state;
+            compile_pak_button.Enabled = state;
+        }
         private async Task CompileAll()
         {
             Console.WriteLine($"Compiling chart and audio for {CurrentGame}");
             SetConsoleChecksum();
             string compileText = compile_all_button.Text;
             compile_all_button.Text = COMPILING;
+            ChangeCompileButtonsState(false);
             DisableCloseButton();
             compileExpertPlus = false;
 
@@ -2041,7 +2051,7 @@ namespace GH_Toolkit_GUI
                     MoveGh5Files();
                     (SongList, QsStrings) = Metadata.GenerateGh5SongListEntry();
                     string? checksumOverride = null;
-                    if (Pref.DlcName && !Pref.CompileToFolder)
+                    if (!Pref.CompileToFolder)
                     {
                         CreateConsoleDownloadFilesGh5(ConsoleChecksum, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings, Metadata.PackageName);
                     }
@@ -2079,6 +2089,7 @@ namespace GH_Toolkit_GUI
             finally
             {
                 EnableCloseButton();
+                ChangeCompileButtonsState(true);
                 compile_all_button.Text = compileText;
                 if (Pref.ShowPostCompile && compileSuccess)
                 {
@@ -2204,13 +2215,12 @@ namespace GH_Toolkit_GUI
         {
             Directory.CreateDirectory(ConsoleCompile);
             string currCheck = GetSongChecksum();
-            bool dlcName = Pref.DlcName;
             int duration = 0;
 
             string pakCheck = $"{currCheck}_song.pak";
             string audioCheck = $"{currCheck}";
 
-            if (dlcName)
+            if (currCheck.StartsWith("dlc"))
             {
                 pakCheck = $"b{pakCheck}";
                 audioCheck = $"a{audioCheck}";
@@ -2252,6 +2262,7 @@ namespace GH_Toolkit_GUI
         {
             compileExpertPlus = false;
             Console.WriteLine($"Compiling song for {CurrentGame}");
+            ChangeCompileButtonsState(false);
             SetConsoleChecksum();
             var time1 = DateTime.Now;
             bool success = false;
@@ -2302,15 +2313,27 @@ namespace GH_Toolkit_GUI
             {
                 ShowPostCompile();
             }
+            ChangeCompileButtonsState(true);
         }
         private async void compile_pak_button_Click(object sender, EventArgs e)
         {
             IsImport = false;
-            await TaskWithFilePathUpdates(CompilePaksAsync);
+
+            if (CurrentPlatform == CONSOLE_PS2 || CurrentPlatform == CONSOLE_WII || CurrentPlatform == CONSOLE_PC)
+            {
+                await TaskWithFilePathUpdates(CompilePaksAsync);
+            }
+            else
+            {
+                Pref.CompileToFolder = true;
+                await TaskWithFilePathUpdates(CompileAll);
+                Pref.CompileToFolder = false;
+            }
         }
         private async void compile_all_button_Click(object sender, EventArgs e)
         {
             IsImport = false;
+            Pref.CompileToFolder = false;
             await TaskWithFilePathUpdates(CompileAll);
         }
         private async Task TaskWithFilePathUpdates(Func<Task> action)
