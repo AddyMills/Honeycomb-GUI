@@ -30,6 +30,8 @@ namespace GH_Toolkit_GUI
             [DefaultValue("")]
             public string coverArtist { get; set; } = "";
             [DefaultValue("")]
+            public string album { get; set; } = "";
+            [DefaultValue("")]
             public string kickPath { get; set; } = "";
             [DefaultValue("")]
             public string snarePath { get; set; } = "";
@@ -388,6 +390,7 @@ namespace GH_Toolkit_GUI
                 artist = artist_input.Text,
                 artistTextCustom = artistTextCustom.Text,
                 coverArtist = cover_artist_input.Text,
+                album = album_input.Text,
 
                 // GHWT
                 // Audio
@@ -509,6 +512,7 @@ namespace GH_Toolkit_GUI
             artist_input.Text = data.artist;
             artistTextCustom.Text = data.artistTextCustom;
             cover_artist_input.Text = data.coverArtist;
+            album_input.Text = data.album;
 
 
             // GH3 Audio
@@ -809,6 +813,7 @@ namespace GH_Toolkit_GUI
             artist_input.Text = songData.Artist ?? string.Empty;
             chart_author_input.Text = songData.Charter ?? string.Empty;
             song_checksum.Text = songData.Checksum ?? string.Empty;
+            album_input.Text = songData.Album ?? string.Empty;
 
             if (songData.Year.HasValue)
                 year_input.Value = songData.Year.Value;
