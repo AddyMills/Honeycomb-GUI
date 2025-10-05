@@ -97,6 +97,8 @@ namespace GH_Toolkit_GUI
             public string ghprojFromLoad { get; set; } = "";
             [DefaultValue("")]
             public string bandWtde { get; set; } = "";
+            [DefaultValue("")]
+            public string modsSubfolder { get; set; } = "";
             [DefaultValue("Default")]
             public string gSkeleton { get; set; } = "";
             [DefaultValue("Default")]
@@ -430,6 +432,7 @@ namespace GH_Toolkit_GUI
                 gameIcon = gameIconInput.Text,
                 gameCategory = gameCategoryInput.Text,
                 bandWtde = bandInput.Text,
+                modsSubfolder = modsSubfolderInput.Text,
                 gSkeleton = gSkeletonSelect.Text,
                 bSkeleton = bSkeletonSelect.Text,
                 dSkeleton = dSkeletonSelect.Text,
@@ -626,6 +629,7 @@ namespace GH_Toolkit_GUI
             gameIconInput.Text = data.gameIcon;
             gameCategoryInput.Text = data.gameCategory;
             bandInput.Text = data.bandWtde;
+            modsSubfolderInput.Text = data.modsSubfolder;
             gSkeletonSelect.Text = data.gSkeleton;
             bSkeletonSelect.Text = data.bSkeleton;
             dSkeletonSelect.Text = data.dSkeleton;

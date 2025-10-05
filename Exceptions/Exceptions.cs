@@ -55,5 +55,9 @@ namespace GH_Toolkit_Exceptions
             MessageBox.Show("Errors were found while processing the SKA.\nPlease refer to the log on the toolkit's main window.", "SKA Processing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             // Make a custom error handler in the near future
         }
+        public static void ModsSubfolderException(Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Mods Subfolder Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

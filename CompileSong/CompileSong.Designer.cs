@@ -55,6 +55,8 @@
             isCover = new CheckBox();
             coverLabel = new Label();
             cover_year_input = new NumericUpDown();
+            label79 = new Label();
+            album_input = new TextBox();
             game_select = new GroupBox();
             game_layout = new TableLayoutPanel();
             radioButton1 = new RadioButton();
@@ -263,6 +265,7 @@
             wtde_settings = new TabPage();
             tableLayoutPanel17 = new TableLayoutPanel();
             label58 = new Label();
+            modsSubfolderButton = new Button();
             label59 = new Label();
             label60 = new Label();
             gameIconInput = new ComboBox();
@@ -293,6 +296,8 @@
             label77 = new Label();
             label78 = new Label();
             careerSortIndexG = new NumericUpDown();
+            label80 = new Label();
+            modsSubfolderInput = new TextBox();
             gh5_settings = new TabPage();
             tableLayoutPanel21 = new TableLayoutPanel();
             label70 = new Label();
@@ -330,8 +335,6 @@
             compile_select = new Button();
             project_select = new Button();
             compile_input = new TextBox();
-            label79 = new Label();
-            album_input = new TextBox();
             compiler_tabs.SuspendLayout();
             metadata_tab.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -728,6 +731,25 @@
             cover_year_input.Size = new Size(119, 23);
             cover_year_input.TabIndex = 21;
             cover_year_input.Value = new decimal(new int[] { 2024, 0, 0, 0 });
+            // 
+            // label79
+            // 
+            label79.Anchor = AnchorStyles.Right;
+            label79.AutoSize = true;
+            label79.Location = new Point(75, 123);
+            label79.Name = "label79";
+            label79.Size = new Size(43, 15);
+            label79.TabIndex = 22;
+            label79.Text = "Album";
+            // 
+            // album_input
+            // 
+            album_input.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel2.SetColumnSpan(album_input, 4);
+            album_input.Location = new Point(124, 119);
+            album_input.Name = "album_input";
+            album_input.Size = new Size(482, 23);
+            album_input.TabIndex = 23;
             // 
             // game_select
             // 
@@ -3252,19 +3274,23 @@
             tableLayoutPanel17.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel17.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60F));
             tableLayoutPanel17.Controls.Add(label58, 0, 0);
+            tableLayoutPanel17.Controls.Add(modsSubfolderButton, 2, 3);
             tableLayoutPanel17.Controls.Add(label59, 0, 1);
             tableLayoutPanel17.Controls.Add(label60, 0, 2);
             tableLayoutPanel17.Controls.Add(gameIconInput, 1, 0);
             tableLayoutPanel17.Controls.Add(gameCategoryInput, 1, 1);
             tableLayoutPanel17.Controls.Add(bandInput, 1, 2);
-            tableLayoutPanel17.Controls.Add(label57, 0, 4);
-            tableLayoutPanel17.Controls.Add(tableLayoutPanel18, 1, 4);
-            tableLayoutPanel17.Controls.Add(tableLayoutPanel19, 1, 5);
-            tableLayoutPanel17.Controls.Add(label73, 0, 3);
-            tableLayoutPanel17.Controls.Add(tableLayoutPanel22, 1, 3);
+            tableLayoutPanel17.Controls.Add(label57, 0, 5);
+            tableLayoutPanel17.Controls.Add(tableLayoutPanel18, 1, 5);
+            tableLayoutPanel17.Controls.Add(tableLayoutPanel19, 1, 6);
+            tableLayoutPanel17.Controls.Add(label73, 0, 4);
+            tableLayoutPanel17.Controls.Add(tableLayoutPanel22, 1, 4);
+            tableLayoutPanel17.Controls.Add(label80, 0, 3);
+            tableLayoutPanel17.Controls.Add(modsSubfolderInput, 1, 3);
             tableLayoutPanel17.Location = new Point(7, 5);
             tableLayoutPanel17.Name = "tableLayoutPanel17";
-            tableLayoutPanel17.RowCount = 7;
+            tableLayoutPanel17.RowCount = 8;
+            tableLayoutPanel17.RowStyles.Add(new RowStyle());
             tableLayoutPanel17.RowStyles.Add(new RowStyle());
             tableLayoutPanel17.RowStyles.Add(new RowStyle());
             tableLayoutPanel17.RowStyles.Add(new RowStyle());
@@ -3285,6 +3311,15 @@
             label58.TabIndex = 0;
             label58.Text = "Game Icon:";
             label58.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // modsSubfolderButton
+            // 
+            modsSubfolderButton.Location = new Point(558, 90);
+            modsSubfolderButton.Name = "modsSubfolderButton";
+            modsSubfolderButton.Size = new Size(54, 23);
+            modsSubfolderButton.TabIndex = 37;
+            modsSubfolderButton.Text = "...";
+            modsSubfolderButton.UseVisualStyleBackColor = true;
             // 
             // label59
             // 
@@ -3338,7 +3373,7 @@
             // 
             label57.Anchor = AnchorStyles.Left;
             label57.AutoSize = true;
-            label57.Location = new Point(3, 147);
+            label57.Location = new Point(3, 176);
             label57.Name = "label57";
             label57.Size = new Size(60, 15);
             label57.TabIndex = 30;
@@ -3361,7 +3396,7 @@
             tableLayoutPanel18.Controls.Add(label63, 2, 0);
             tableLayoutPanel18.Controls.Add(label64, 3, 0);
             tableLayoutPanel18.Controls.Add(gSkeletonSelect, 0, 1);
-            tableLayoutPanel18.Location = new Point(106, 132);
+            tableLayoutPanel18.Location = new Point(106, 161);
             tableLayoutPanel18.Margin = new Padding(0);
             tableLayoutPanel18.Name = "tableLayoutPanel18";
             tableLayoutPanel18.RowCount = 2;
@@ -3458,7 +3493,7 @@
             tableLayoutPanel19.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel19.Controls.Add(useNewClipsCheck, 0, 0);
             tableLayoutPanel19.Controls.Add(modernStrobesCheck, 1, 0);
-            tableLayoutPanel19.Location = new Point(106, 177);
+            tableLayoutPanel19.Location = new Point(106, 206);
             tableLayoutPanel19.Margin = new Padding(0);
             tableLayoutPanel19.Name = "tableLayoutPanel19";
             tableLayoutPanel19.RowCount = 1;
@@ -3495,7 +3530,7 @@
             // 
             label73.Anchor = AnchorStyles.Left;
             label73.AutoSize = true;
-            label73.Location = new Point(3, 102);
+            label73.Location = new Point(3, 131);
             label73.Name = "label73";
             label73.Size = new Size(100, 15);
             label73.TabIndex = 33;
@@ -3520,7 +3555,7 @@
             tableLayoutPanel22.Controls.Add(label77, 3, 0);
             tableLayoutPanel22.Controls.Add(label78, 4, 0);
             tableLayoutPanel22.Controls.Add(careerSortIndexG, 0, 1);
-            tableLayoutPanel22.Location = new Point(106, 87);
+            tableLayoutPanel22.Location = new Point(106, 116);
             tableLayoutPanel22.Margin = new Padding(0);
             tableLayoutPanel22.Name = "tableLayoutPanel22";
             tableLayoutPanel22.RowCount = 2;
@@ -3618,6 +3653,24 @@
             careerSortIndexG.Name = "careerSortIndexG";
             careerSortIndexG.Size = new Size(83, 23);
             careerSortIndexG.TabIndex = 9;
+            // 
+            // label80
+            // 
+            label80.Anchor = AnchorStyles.Left;
+            label80.AutoSize = true;
+            label80.Location = new Point(3, 94);
+            label80.Name = "label80";
+            label80.Size = new Size(98, 15);
+            label80.TabIndex = 35;
+            label80.Text = "MODS Subfolder:";
+            // 
+            // modsSubfolderInput
+            // 
+            modsSubfolderInput.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            modsSubfolderInput.Location = new Point(109, 90);
+            modsSubfolderInput.Name = "modsSubfolderInput";
+            modsSubfolderInput.Size = new Size(443, 23);
+            modsSubfolderInput.TabIndex = 36;
             // 
             // gh5_settings
             // 
@@ -3981,25 +4034,6 @@
             compile_input.Name = "compile_input";
             compile_input.Size = new Size(419, 23);
             compile_input.TabIndex = 2;
-            // 
-            // label79
-            // 
-            label79.Anchor = AnchorStyles.Right;
-            label79.AutoSize = true;
-            label79.Location = new Point(75, 123);
-            label79.Name = "label79";
-            label79.Size = new Size(43, 15);
-            label79.TabIndex = 22;
-            label79.Text = "Album";
-            // 
-            // album_input
-            // 
-            album_input.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            tableLayoutPanel2.SetColumnSpan(album_input, 4);
-            album_input.Location = new Point(124, 119);
-            album_input.Name = "album_input";
-            album_input.Size = new Size(482, 23);
-            album_input.TabIndex = 23;
             // 
             // CompileSong
             // 
@@ -4419,5 +4453,8 @@
         private NumericUpDown careerSortIndexG;
         private Label label79;
         private TextBox album_input;
+        private Label label80;
+        private TextBox modsSubfolderInput;
+        private Button modsSubfolderButton;
     }
 }

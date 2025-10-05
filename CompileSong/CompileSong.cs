@@ -409,12 +409,16 @@ namespace GH_Toolkit_GUI
             gh3SkaFilesSelect.Tag = new Tuple<TextBox, string, string>(gh3SkaFilesInput, "folder", "");
             songScriptSelect.Tag = new Tuple<TextBox, string, string>(songScriptInput, "file", qFileFilter);
 
+            // WTDE Settings
+            modsSubfolderButton.Tag = new Tuple<TextBox, string, string, string>(modsSubfolderInput, "folder", "", Pref.WtModsFolder);
+
             // Attach the event handlers to all GHWT+ Song Data tab buttons
             midiFileSelect.Click += SelectFileFolder;
             perfOverrideSelect.Click += SelectFileFolder;
             skaFilesSelect.Click += SelectFileFolder;
             gh3SkaFilesSelect.Click += SelectFileFolder;
             songScriptSelect.Click += SelectFileFolder;
+            modsSubfolderButton.Click += SelectModsSubfolder;
         }
         public void SetGameFields()
         {
@@ -767,9 +771,28 @@ namespace GH_Toolkit_GUI
         private void SelectFileFolder(object sender, EventArgs e)
         {
             Button btn = sender as Button;
-            if (btn != null && btn.Tag is Tuple<TextBox, string, string>)
+            if (btn != null)
             {
-                var (linkedTextBox, dialogType, fileFilter) = (Tuple<TextBox, string, string>)btn.Tag;
+                TextBox linkedTextBox;
+                string dialogType;
+                string fileFilter;
+                string defaultPath = "";
+
+
+                if (btn.Tag is Tuple<TextBox, string, string>)
+                {
+                    (linkedTextBox, dialogType, fileFilter) = (Tuple<TextBox, string, string>)btn.Tag;
+                }
+                else if (btn.Tag is Tuple<TextBox, string, string, string>)
+                {
+                    (linkedTextBox, dialogType, fileFilter, defaultPath) = (Tuple<TextBox, string, string, string>)btn.Tag;
+                }
+                else
+                {
+                    MessageBox.Show("Button tag is not properly set. This is bad. Contact AddyMills.");
+                    return; // Invalid tag, exit the method
+                }
+
 
                 if (dialogType == "file")
                 {
@@ -794,6 +817,14 @@ namespace GH_Toolkit_GUI
                     using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
                     {
                         folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                        if (Directory.Exists(defaultPath))
+                        {
+                            if (!defaultPath.EndsWith("\\"))
+                            {
+                                defaultPath += "\\";
+                            }
+                            folderBrowserDialog.SelectedPath = defaultPath;
+                        }
 
                         if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                         {
@@ -805,6 +836,52 @@ namespace GH_Toolkit_GUI
                         }
                     }
                 }
+            }
+        }
+        private void CheckModsSubfolder()
+        {
+            string modsFolder = Path.GetFullPath(Pref.WtModsFolder);
+            string inputPath;
+
+            if (Path.IsPathRooted(modsSubfolderInput.Text))
+            {
+                // Absolute path provided
+                inputPath = Path.GetFullPath(modsSubfolderInput.Text);
+
+                // Ensure path is inside MODS folder
+                if (!inputPath.StartsWith(modsFolder.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar,
+                                          StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new Exception("The subfolder path must be within the MODS folder.");
+                }
+
+                // Convert to relative path since it’s valid
+                modsSubfolderInput.Text = Path.GetRelativePath(modsFolder, inputPath);
+            }
+            else
+            {
+                // Treat as a relative path
+                inputPath = Path.GetFullPath(Path.Combine(modsFolder, modsSubfolderInput.Text));
+
+                // (Optional safety check: ensure still inside mods folder)
+                if (!inputPath.StartsWith(modsFolder.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar,
+                                          StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new Exception("Invalid relative MODS folder path. It escapes the MODS folder.");
+                }
+            }            
+        }
+        private void SelectModsSubfolder(object sender, EventArgs e)
+        {
+            SelectFileFolder(sender, e);
+            try
+            {
+                CheckModsSubfolder();
+            }
+            catch (Exception ex)
+            {
+                ModsSubfolderException(ex);
+                modsSubfolderInput.Text = "";
             }
         }
         private void SaveCompileString(object sender, EventArgs e)
@@ -1027,7 +1104,18 @@ namespace GH_Toolkit_GUI
             setEndTime.Checked = gh3_set_end.Checked;
             isProgrammaticChange = false;
         }
-
+        private void CheckForModsFolder()
+        {
+            if (!Directory.Exists(Pref.WtModsFolder))
+            {
+                MessageBox.Show("Your GHWT mods folder has not been set. Please select your MODS folder now.", "Folder Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                UpdateGhwtModsFolder(AskForGamePath());
+                if (!Directory.Exists(Pref.WtModsFolder))
+                {
+                    throw new Exception("GHWT Mods folder not set.");
+                }
+            }
+        }
         private void UpdateGhwtModsFolder(string folderPath)
         {
             Pref.WtModsFolder = folderPath;
@@ -1046,11 +1134,7 @@ namespace GH_Toolkit_GUI
             {
                 if (CurrentPlatform == "PC")
                 {
-                    if (!Directory.Exists(Pref.WtModsFolder))
-                    {
-                        MessageBox.Show("Your GHWT mods folder has not been set. Please select your MODS folder now.", "Folder Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        UpdateGhwtModsFolder(AskForGamePath());
-                    }
+                    CheckForModsFolder();
                 }
             }
             if (CurrentPlatform == "PS2" && !isExport)
@@ -1224,7 +1308,7 @@ namespace GH_Toolkit_GUI
                 if (Pref.DlcName)
                 {
                     dlcChecksum = $"dlc{ConsoleChecksum}_song.pak";
-                    
+
                 }
                 else
                 {
@@ -1285,8 +1369,19 @@ namespace GH_Toolkit_GUI
 
             if (CurrentPlatform == "PC")
             {
-                WtSongFolder = Path.Combine(Pref.WtModsFolder, song_checksum.Text);
-                WtSongFolderExpertPlus = Path.Combine(Pref.WtModsFolder, $"{song_checksum.Text}X");
+                if (!string.IsNullOrWhiteSpace(modsSubfolderInput.Text))
+                {
+                    string modsFolder = Path.GetFullPath(Pref.WtModsFolder);
+                    CheckModsSubfolder();
+                    // Build song folders using normalized relative path
+                    WtSongFolder = Path.Combine(modsFolder, modsSubfolderInput.Text, song_checksum.Text);
+                    WtSongFolderExpertPlus = Path.Combine(modsFolder, modsSubfolderInput.Text, $"{song_checksum.Text}X");
+                }
+                else
+                {
+                    WtSongFolder = Path.Combine(Pref.WtModsFolder, song_checksum.Text);
+                    WtSongFolderExpertPlus = Path.Combine(Pref.WtModsFolder, $"{song_checksum.Text}X");
+                }
                 ContentFolder = Path.Combine(WtSongFolder, "Content");
                 ContentFolderExpertPlus = Path.Combine(WtSongFolderExpertPlus, "Content");
                 MusicFolder = Path.Combine(ContentFolder, "Music");
@@ -1846,7 +1941,7 @@ namespace GH_Toolkit_GUI
                 }
                 else
                 {
-                
+
                     await compiler.GH3AudioCompile();
                     var (fsbOut, datOut) = compiler.getFsbDat();
                     if (isExport || Pref.CompileToFolder || !Pref.DlcName)
@@ -1922,13 +2017,13 @@ namespace GH_Toolkit_GUI
                 {
                     if (compileExpertPlus)
                     {
-                        foreach (string fileEnd in new string[] {"_1", "_2", "_3", "_preview"})
+                        foreach (string fileEnd in new string[] { "_1", "_2", "_3", "_preview" })
                         {
                             string file = Path.Combine(compile_input.Text, $"{songChecksum}{fileEnd}.fsb");
                             string fileName = Path.GetFileName(file);
                             string fileSave = Path.Combine(MusicFolder, $"{fileName}.xen");
                             string fileSaveExpertPlus = Path.Combine(MusicFolderExpertPlus, $"{songChecksum}X{fileEnd}.fsb.xen");
-                            
+
                             File.Copy(file, fileSave, true);
                             File.Move(file, fileSaveExpertPlus, true);
                         }
@@ -2062,7 +2157,7 @@ namespace GH_Toolkit_GUI
                         checksumOverride = GetSongChecksum();
                         CreateConsoleFolderGh5(checksumOverride, CurrentGame, CurrentPlatform, ConsoleCompile, ResourcePath, SongList, QsStrings);
                     }
-                    
+
                 }
                 if (!isExport && compileSuccess && (CurrentPlatform == "PS3" || CurrentPlatform == platform_360.Text))
                 {
