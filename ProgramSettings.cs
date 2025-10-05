@@ -58,6 +58,8 @@ namespace GH_Toolkit_GUI
             Pref.PreferredConsole = PreferredConsoleSetting.Text;
             Pref.DlcName = DlcShortnameDefault.SelectedIndex == 0; // 0 = dlc123456789, 1 = alphanumeric
             Pref.Gh3Plus = Gh3PlusCheckbox.Checked;
+            Pref.Gh3FolderPath = Gh3FolderPath.Text;
+            Pref.GhaFolderPath = GhaFolderPath.Text;
 
             Pref.SongManagerDeleteSongs = SongManagerDeleteSongs.Checked;
             // Do not save Gh3/Gha folder paths as they are read-only fields

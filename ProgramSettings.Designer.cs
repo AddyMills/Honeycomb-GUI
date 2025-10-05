@@ -241,7 +241,6 @@
             Gh3FolderPath.Location = new Point(292, 419);
             Gh3FolderPath.Margin = new Padding(3, 2, 3, 2);
             Gh3FolderPath.Name = "Gh3FolderPath";
-            Gh3FolderPath.ReadOnly = true;
             Gh3FolderPath.Size = new Size(532, 23);
             Gh3FolderPath.TabIndex = 9;
             // 
@@ -251,7 +250,6 @@
             GhaFolderPath.Location = new Point(292, 460);
             GhaFolderPath.Margin = new Padding(3, 2, 3, 2);
             GhaFolderPath.Name = "GhaFolderPath";
-            GhaFolderPath.ReadOnly = true;
             GhaFolderPath.Size = new Size(532, 23);
             GhaFolderPath.TabIndex = 10;
             // 
