@@ -1237,12 +1237,13 @@ namespace GH_Toolkit_GUI
         private string GetSongChecksum()
         {
             bool isGh3orGha = CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA;
+            bool alwaysName = CurrentPlatform == "PC" || CurrentPlatform == "PS2";
 
-            if (!isGh3orGha && !Pref.CompileToFolder)
+            if (!isGh3orGha && !Pref.CompileToFolder && !alwaysName)
             {
                 return $"dlc{ConsoleChecksum}";
             }
-            else if (CurrentPlatform == "PC" || CurrentPlatform == "PS2" || !Pref.DlcName)
+            else if (alwaysName || !Pref.DlcName)
             {
                 return song_checksum.Text;
             }
