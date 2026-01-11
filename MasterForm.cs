@@ -63,8 +63,8 @@ namespace GH_Toolkit_GUI
 
         private void songlistManagerClick(object sender, EventArgs e)
         {
-            SongListManager songListManager = new SongListManager();
-            songListManager.Show();
+            SongListManager songListManagerForm = new SongListManager();
+            songListManagerForm.Show();
         }
 
         private void toolStripLabel1_Click(object sender, EventArgs e)

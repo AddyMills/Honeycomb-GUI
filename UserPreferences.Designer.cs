@@ -12,7 +12,7 @@ namespace GH_Toolkit_GUI {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
     internal sealed partial class UserPreferences : global::System.Configuration.ApplicationSettingsBase {
         
         private static UserPreferences defaultInstance = ((UserPreferences)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new UserPreferences())));
@@ -248,6 +248,18 @@ namespace GH_Toolkit_GUI {
             }
             set {
                 this["Gh3Plus"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ChecksumWarning {
+            get {
+                return ((int)(this["ChecksumWarning"]));
+            }
+            set {
+                this["ChecksumWarning"] = value;
             }
         }
     }

@@ -35,7 +35,6 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             wadExplorerButton = new Button();
             pakToolsButton = new Button();
-            importSGH = new Button();
             label1 = new Label();
             songlistManagerButton = new Button();
             consoleOutput = new TextBox();
@@ -83,9 +82,8 @@
             tableLayoutPanel1.Controls.Add(wadExplorerButton, 0, 2);
             tableLayoutPanel1.Controls.Add(pakToolsButton, 0, 1);
             tableLayoutPanel1.Controls.Add(button1, 0, 0);
-            tableLayoutPanel1.Controls.Add(importSGH, 0, 4);
             tableLayoutPanel1.Controls.Add(label1, 0, 3);
-            tableLayoutPanel1.Controls.Add(songlistManagerButton, 0, 5);
+            tableLayoutPanel1.Controls.Add(songlistManagerButton, 0, 4);
             tableLayoutPanel1.Location = new Point(10, 22);
             tableLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -121,18 +119,6 @@
             pakToolsButton.UseVisualStyleBackColor = true;
             pakToolsButton.Click += pakToolsButton_Click;
             // 
-            // importSGH
-            // 
-            importSGH.Dock = DockStyle.Fill;
-            importSGH.Location = new Point(3, 204);
-            importSGH.Margin = new Padding(3, 2, 3, 2);
-            importSGH.Name = "importSGH";
-            importSGH.Size = new Size(430, 59);
-            importSGH.TabIndex = 2;
-            importSGH.Text = "Import SGH Archive";
-            importSGH.UseVisualStyleBackColor = true;
-            importSGH.Click += button2_Click;
-            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -146,13 +132,13 @@
             // 
             // songlistManagerButton
             // 
+            songlistManagerButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             songlistManagerButton.AutoSize = true;
-            songlistManagerButton.Dock = DockStyle.Fill;
-            songlistManagerButton.Location = new Point(3, 268);
+            songlistManagerButton.Location = new Point(3, 205);
             songlistManagerButton.Name = "songlistManagerButton";
-            songlistManagerButton.Size = new Size(430, 59);
+            songlistManagerButton.Size = new Size(430, 57);
             songlistManagerButton.TabIndex = 4;
-            songlistManagerButton.Text = "PC Songlist Manager";
+            songlistManagerButton.Text = "Song Manager";
             songlistManagerButton.UseVisualStyleBackColor = true;
             songlistManagerButton.Click += songlistManagerClick;
             // 
@@ -193,7 +179,6 @@
         private ToolStripDropDownButton FileButton;
         private Button button1;
         private TableLayoutPanel tableLayoutPanel1;
-        private Button importSGH;
         private TextBox consoleOutput;
         private Label label1;
         private Button songlistManagerButton;

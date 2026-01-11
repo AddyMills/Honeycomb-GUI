@@ -1,43 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using GH_Toolkit_Core.Methods;
 using GH_Toolkit_Core.QB;
-using GH_Toolkit_Core.PAK;
-using static GH_Toolkit_Core.QB.QBConstants;
-using GH_Toolkit_Core.Methods;
-using System.Reflection;
-using static GH_Toolkit_GUI.PreCompileChecks;
 using static GH_Toolkit_Core.Methods.CreateForGame;
+using static GH_Toolkit_Core.PAK.PAK;
+using static GH_Toolkit_Core.QB.QB;
+using static GH_Toolkit_Core.QB.QBArray;
+using static GH_Toolkit_Core.QB.QBConstants;
+using static GH_Toolkit_Core.QB.QBStruct;
+using static GH_Toolkit_GUI.PreCompileChecks;
+using GH_Toolkit_Core.PAK;
 using static GH_Toolkit_Exceptions.Exceptions;
 using GH_Toolkit_Core.PS360;
-using GH_Toolkit_GUI.Properties;
-using System.Drawing.Drawing2D;
 
 namespace GH_Toolkit_GUI
 {
-    public partial class ImportSGH : Form
+    public partial class SongListManager
     {
-        private readonly string sghFileFilter = "SGH Files (*.sgh)|*.sgh|Zip Files (*.zip)|*.zip|All files (*.*)|*.*";
-        private Dictionary<string, QBStruct.QBStructData> MasterList = new Dictionary<string, QBStruct.QBStructData>();
-        private string SghPath = "";
-        private string SghFolder = "";
-        private static UserPreferences Pref = UserPreferences.Default;
-        public ImportSGH(string sghFile = "")
-        {
-            InitializeComponent();
-            ConsoleSelect.SelectedIndex = 0;
-            if (sghFile != "")
-            {
-                SghPath = sghFile;
-                LoadSGH();
-            }
-        }
         private void ClearAll()
         {
             MasterList.Clear();
@@ -122,7 +99,7 @@ namespace GH_Toolkit_GUI
                 if (File.Exists(sectionPath))
                 {
                     var (qbFile, _) = QB.ParseQFromFile(sectionPath);
-                    sectionDict = QB.QbEntryDict(qbFile);  
+                    sectionDict = QB.QbEntryDict(qbFile);
                 }
 
                 DeleteTempFiles(compilePath);
@@ -154,7 +131,7 @@ namespace GH_Toolkit_GUI
                 var first = toImport[0];
                 string[] checksumStrings = [(string)first["checksum"], (string)first["Title"], (string)first["Artist"], "123456"];
                 var checksum = CreateForGame.MakeConsoleChecksum(checksumStrings);
-                var platform = ConsoleSelect.Text;
+                var platform = consoleSelect.Text;
                 if (platform == CONSOLE_PC)
                 {
                     Gh3PcCheck(game);
@@ -190,7 +167,7 @@ namespace GH_Toolkit_GUI
                             var songMid = $"songs/{songName}.mid.qb";
                             foreach (var entry in pakEntries)
                             {
-                                
+
                                 if (entry.FullName == songMid)
                                 {
                                     var markers = $"{songName}_markers";
@@ -319,43 +296,6 @@ namespace GH_Toolkit_GUI
                     File.Move(file, file + extension, true);
                 }
             }
-        }
-        private void importSgh_Click(object sender, EventArgs e)
-        {
-            using (var dialog = new OpenFileDialog())
-            {
-                string sghPath = "";
-                dialog.Filter = sghFileFilter;
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    SghPath = dialog.FileName;
-                }
-                else
-                {
-                    return;
-                }
-                LoadSGH();
-            }
-        }
-
-        private void convertButton_Click(object sender, EventArgs e)
-        {
-            ConvertSongs();
-        }
-
-        private void clearAllButton_Click(object sender, EventArgs e)
-        {
-            ClearAll();
-        }
-
-        private void deleteCheckedButton_Click(object sender, EventArgs e)
-        {
-            DeleteChecked();
-        }
-
-        private void resetQbPak_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

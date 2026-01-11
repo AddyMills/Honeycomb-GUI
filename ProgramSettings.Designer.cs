@@ -59,6 +59,8 @@
             DlcShortnameDefault = new ComboBox();
             label16 = new Label();
             Gh3PlusCheckbox = new CheckBox();
+            supressChecksumWarning = new Label();
+            DupeChecksumWarning = new ComboBox();
             tabPage2 = new TabPage();
             tableLayoutPanel3 = new TableLayoutPanel();
             SongManagerDeleteSongs = new CheckBox();
@@ -126,26 +128,29 @@
             tableLayoutPanel1.Controls.Add(DlcShortnameDefault, 1, 13);
             tableLayoutPanel1.Controls.Add(label16, 0, 14);
             tableLayoutPanel1.Controls.Add(Gh3PlusCheckbox, 1, 14);
+            tableLayoutPanel1.Controls.Add(supressChecksumWarning, 0, 15);
+            tableLayoutPanel1.Controls.Add(DupeChecksumWarning, 1, 15);
             tableLayoutPanel1.Location = new Point(3, 2);
             tableLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 16;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.250783F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.250832F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.250782F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.2483325F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.25177F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.25177F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.250781F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.25083256F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.25083256F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.25083256F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.250781F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.250781F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.249219F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.24876642F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.24876642F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 6.244141F));
+            tableLayoutPanel1.RowCount = 17;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882766F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.88281155F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.88276434F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.88045931F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.883694F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.883694F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882764F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882812F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882812F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882812F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882764F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.882764F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.8812933F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.88086748F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.880867F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.88202858F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 5.88202858F));
             tableLayoutPanel1.Size = new Size(827, 667);
             tableLayoutPanel1.TabIndex = 0;
             // 
@@ -153,10 +158,10 @@
             // 
             OverrideBeatLines.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             OverrideBeatLines.AutoSize = true;
-            OverrideBeatLines.Location = new Point(292, 43);
+            OverrideBeatLines.Location = new Point(292, 41);
             OverrideBeatLines.Margin = new Padding(3, 2, 3, 2);
             OverrideBeatLines.Name = "OverrideBeatLines";
-            OverrideBeatLines.Size = new Size(15, 37);
+            OverrideBeatLines.Size = new Size(15, 35);
             OverrideBeatLines.TabIndex = 15;
             OverrideBeatLines.UseVisualStyleBackColor = true;
             // 
@@ -164,7 +169,7 @@
             // 
             EncryptAudio.Anchor = AnchorStyles.Left;
             EncryptAudio.AutoSize = true;
-            EncryptAudio.Location = new Point(292, 218);
+            EncryptAudio.Location = new Point(292, 207);
             EncryptAudio.Margin = new Padding(3, 2, 3, 2);
             EncryptAudio.Name = "EncryptAudio";
             EncryptAudio.Size = new Size(15, 14);
@@ -175,9 +180,9 @@
             // 
             label2.AutoSize = true;
             label2.Dock = DockStyle.Fill;
-            label2.Location = new Point(3, 451);
+            label2.Location = new Point(3, 429);
             label2.Name = "label2";
-            label2.Size = new Size(283, 41);
+            label2.Size = new Size(283, 39);
             label2.TabIndex = 5;
             label2.Text = "GHA Folder Path (PC)";
             label2.TextAlign = ContentAlignment.MiddleLeft;
@@ -186,9 +191,9 @@
             // 
             label1.AutoSize = true;
             label1.Dock = DockStyle.Fill;
-            label1.Location = new Point(3, 410);
+            label1.Location = new Point(3, 390);
             label1.Name = "label1";
-            label1.Size = new Size(283, 41);
+            label1.Size = new Size(283, 39);
             label1.TabIndex = 4;
             label1.Text = "GH3 Folder Path (PC)";
             label1.TextAlign = ContentAlignment.MiddleLeft;
@@ -197,9 +202,9 @@
             // 
             label3.AutoSize = true;
             label3.Dock = DockStyle.Fill;
-            label3.Location = new Point(3, 246);
+            label3.Location = new Point(3, 234);
             label3.Name = "label3";
-            label3.Size = new Size(283, 41);
+            label3.Size = new Size(283, 39);
             label3.TabIndex = 3;
             label3.Text = "GHWT MODS Folder Path";
             label3.TextAlign = ContentAlignment.MiddleLeft;
@@ -210,7 +215,7 @@
             label5.AutoSize = true;
             label5.Location = new Point(3, 0);
             label5.Name = "label5";
-            label5.Size = new Size(166, 41);
+            label5.Size = new Size(166, 39);
             label5.TabIndex = 6;
             label5.Text = "Show Compile Success Popup";
             label5.TextAlign = ContentAlignment.MiddleLeft;
@@ -222,14 +227,14 @@
             CompilePopup.Location = new Point(292, 2);
             CompilePopup.Margin = new Padding(3, 2, 3, 2);
             CompilePopup.Name = "CompilePopup";
-            CompilePopup.Size = new Size(15, 37);
+            CompilePopup.Size = new Size(15, 35);
             CompilePopup.TabIndex = 1;
             CompilePopup.UseVisualStyleBackColor = true;
             // 
             // WtModsFolder
             // 
             WtModsFolder.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            WtModsFolder.Location = new Point(292, 255);
+            WtModsFolder.Location = new Point(292, 242);
             WtModsFolder.Margin = new Padding(3, 2, 3, 2);
             WtModsFolder.Name = "WtModsFolder";
             WtModsFolder.Size = new Size(532, 23);
@@ -238,7 +243,7 @@
             // Gh3FolderPath
             // 
             Gh3FolderPath.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            Gh3FolderPath.Location = new Point(292, 419);
+            Gh3FolderPath.Location = new Point(292, 398);
             Gh3FolderPath.Margin = new Padding(3, 2, 3, 2);
             Gh3FolderPath.Name = "Gh3FolderPath";
             Gh3FolderPath.Size = new Size(532, 23);
@@ -247,7 +252,7 @@
             // GhaFolderPath
             // 
             GhaFolderPath.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            GhaFolderPath.Location = new Point(292, 460);
+            GhaFolderPath.Location = new Point(292, 437);
             GhaFolderPath.Margin = new Padding(3, 2, 3, 2);
             GhaFolderPath.Name = "GhaFolderPath";
             GhaFolderPath.Size = new Size(532, 23);
@@ -258,7 +263,7 @@
             label8.Anchor = AnchorStyles.None;
             label8.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(label8, 2);
-            label8.Location = new Point(280, 177);
+            label8.Location = new Point(280, 168);
             label8.Name = "label8";
             label8.Size = new Size(267, 15);
             label8.TabIndex = 11;
@@ -269,7 +274,7 @@
             // 
             label9.Anchor = AnchorStyles.Left;
             label9.AutoSize = true;
-            label9.Location = new Point(3, 218);
+            label9.Location = new Point(3, 207);
             label9.Name = "label9";
             label9.Size = new Size(82, 15);
             label9.TabIndex = 12;
@@ -280,7 +285,7 @@
             // 
             label4.Anchor = AnchorStyles.Left;
             label4.AutoSize = true;
-            label4.Location = new Point(3, 95);
+            label4.Location = new Point(3, 90);
             label4.Name = "label4";
             label4.Size = new Size(167, 15);
             label4.TabIndex = 2;
@@ -299,7 +304,7 @@
             tableLayoutPanel2.Controls.Add(label7, 2, 0);
             tableLayoutPanel2.Controls.Add(PreviewFadeOut, 3, 0);
             tableLayoutPanel2.Controls.Add(PreviewFadeIn, 1, 0);
-            tableLayoutPanel2.Location = new Point(289, 85);
+            tableLayoutPanel2.Location = new Point(289, 80);
             tableLayoutPanel2.Margin = new Padding(0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
@@ -359,9 +364,9 @@
             // 
             label10.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             label10.AutoSize = true;
-            label10.Location = new Point(3, 41);
+            label10.Location = new Point(3, 39);
             label10.Name = "label10";
-            label10.Size = new Size(183, 41);
+            label10.Size = new Size(183, 39);
             label10.TabIndex = 14;
             label10.Text = "Override Beat Lines (if applicable)";
             label10.TextAlign = ContentAlignment.MiddleLeft;
@@ -371,7 +376,7 @@
             label11.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             label11.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(label11, 2);
-            label11.Location = new Point(3, 300);
+            label11.Location = new Point(3, 285);
             label11.Name = "label11";
             label11.Size = new Size(821, 15);
             label11.TabIndex = 16;
@@ -382,9 +387,9 @@
             // 
             label12.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             label12.AutoSize = true;
-            label12.Location = new Point(3, 328);
+            label12.Location = new Point(3, 312);
             label12.Name = "label12";
-            label12.Size = new Size(82, 41);
+            label12.Size = new Size(82, 39);
             label12.TabIndex = 17;
             label12.Text = "Onyx CLI Path";
             label12.TextAlign = ContentAlignment.MiddleLeft;
@@ -392,7 +397,7 @@
             // OnyxCliFolder
             // 
             OnyxCliFolder.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            OnyxCliFolder.Location = new Point(292, 337);
+            OnyxCliFolder.Location = new Point(292, 320);
             OnyxCliFolder.Name = "OnyxCliFolder";
             OnyxCliFolder.Size = new Size(532, 23);
             OnyxCliFolder.TabIndex = 18;
@@ -401,7 +406,7 @@
             // 
             label13.Anchor = AnchorStyles.Left;
             label13.AutoSize = true;
-            label13.Location = new Point(3, 136);
+            label13.Location = new Point(3, 129);
             label13.Name = "label13";
             label13.Size = new Size(104, 15);
             label13.TabIndex = 19;
@@ -412,7 +417,7 @@
             PreferredConsoleSetting.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             PreferredConsoleSetting.FormattingEnabled = true;
             PreferredConsoleSetting.Items.AddRange(new object[] { "Xbox 360", "PS3" });
-            PreferredConsoleSetting.Location = new Point(292, 132);
+            PreferredConsoleSetting.Location = new Point(292, 125);
             PreferredConsoleSetting.Name = "PreferredConsoleSetting";
             PreferredConsoleSetting.Size = new Size(532, 23);
             PreferredConsoleSetting.TabIndex = 20;
@@ -421,7 +426,7 @@
             // 
             label15.Anchor = AnchorStyles.Left;
             label15.AutoSize = true;
-            label15.Location = new Point(3, 546);
+            label15.Location = new Point(3, 519);
             label15.Name = "label15";
             label15.Size = new Size(134, 15);
             label15.TabIndex = 22;
@@ -433,7 +438,7 @@
             DlcShortnameDefault.DropDownStyle = ComboBoxStyle.DropDownList;
             DlcShortnameDefault.FormattingEnabled = true;
             DlcShortnameDefault.Items.AddRange(new object[] { "dlc123456789", "Checksum" });
-            DlcShortnameDefault.Location = new Point(292, 542);
+            DlcShortnameDefault.Location = new Point(292, 515);
             DlcShortnameDefault.Name = "DlcShortnameDefault";
             DlcShortnameDefault.Size = new Size(532, 23);
             DlcShortnameDefault.TabIndex = 23;
@@ -442,7 +447,7 @@
             // 
             label16.Anchor = AnchorStyles.Left;
             label16.AutoSize = true;
-            label16.Location = new Point(3, 587);
+            label16.Location = new Point(3, 558);
             label16.Name = "label16";
             label16.Size = new Size(157, 15);
             label16.TabIndex = 25;
@@ -452,11 +457,32 @@
             // 
             Gh3PlusCheckbox.Anchor = AnchorStyles.Left;
             Gh3PlusCheckbox.AutoSize = true;
-            Gh3PlusCheckbox.Location = new Point(292, 587);
+            Gh3PlusCheckbox.Location = new Point(292, 558);
             Gh3PlusCheckbox.Name = "Gh3PlusCheckbox";
             Gh3PlusCheckbox.Size = new Size(15, 14);
             Gh3PlusCheckbox.TabIndex = 26;
             Gh3PlusCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // supressChecksumWarning
+            // 
+            supressChecksumWarning.Anchor = AnchorStyles.Left;
+            supressChecksumWarning.AutoSize = true;
+            supressChecksumWarning.Location = new Point(3, 597);
+            supressChecksumWarning.Name = "supressChecksumWarning";
+            supressChecksumWarning.Size = new Size(164, 15);
+            supressChecksumWarning.TabIndex = 27;
+            supressChecksumWarning.Text = "Duplicate Checksum Warning";
+            // 
+            // DupeChecksumWarning
+            // 
+            DupeChecksumWarning.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            DupeChecksumWarning.DropDownStyle = ComboBoxStyle.DropDownList;
+            DupeChecksumWarning.FormattingEnabled = true;
+            DupeChecksumWarning.Items.AddRange(new object[] { "Always Show Warning", "Always Modify Checksum", "Always Cancel Compilation" });
+            DupeChecksumWarning.Location = new Point(292, 593);
+            DupeChecksumWarning.Name = "DupeChecksumWarning";
+            DupeChecksumWarning.Size = new Size(532, 23);
+            DupeChecksumWarning.TabIndex = 28;
             // 
             // tabPage2
             // 
@@ -573,5 +599,7 @@
         private ComboBox DlcShortnameDefault;
         private Label label16;
         private CheckBox Gh3PlusCheckbox;
+        private Label supressChecksumWarning;
+        private ComboBox DupeChecksumWarning;
     }
 }
