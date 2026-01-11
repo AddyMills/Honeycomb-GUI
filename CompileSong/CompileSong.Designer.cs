@@ -3827,7 +3827,7 @@
             // 
             // compile_pak_button
             // 
-            compile_pak_button.BackColor = Color.MistyRose;
+            compile_pak_button.BackColor = Color.DarkOrange;
             compile_pak_button.FlatAppearance.BorderSize = 0;
             compile_pak_button.Location = new Point(555, 3);
             compile_pak_button.Name = "compile_pak_button";
@@ -3840,12 +3840,13 @@
             // 
             // compile_all_button
             // 
-            compile_all_button.BackColor = Color.IndianRed;
+            compile_all_button.BackColor = Color.OliveDrab;
+            compile_all_button.ForeColor = SystemColors.ControlText;
             compile_all_button.Location = new Point(555, 32);
             compile_all_button.Name = "compile_all_button";
             compile_all_button.Size = new Size(114, 23);
             compile_all_button.TabIndex = 7;
-            compile_all_button.Text = "Compile All";
+            compile_all_button.Text = "Compile Song";
             toolTip1.SetToolTip(compile_all_button, "Compiles the song data as well as the audio.");
             compile_all_button.UseVisualStyleBackColor = false;
             compile_all_button.Click += compile_all_button_Click;
@@ -3943,14 +3944,14 @@
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(154, 22);
+            settingsToolStripMenuItem.Size = new Size(180, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
             // compileAudioToolStripMenuItem
             // 
             compileAudioToolStripMenuItem.Name = "compileAudioToolStripMenuItem";
-            compileAudioToolStripMenuItem.Size = new Size(154, 22);
+            compileAudioToolStripMenuItem.Size = new Size(180, 22);
             compileAudioToolStripMenuItem.Text = "Compile Audio";
             compileAudioToolStripMenuItem.Click += compileAudioToolStripMenuItem_Click;
             // 

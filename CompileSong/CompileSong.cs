@@ -94,6 +94,7 @@ namespace GH_Toolkit_GUI
         private bool isExport = false;
         private bool isAudioCompile = false;
         private bool compileExpertPlus = false;
+        private bool remakeAudio = true;
         private UserPreferences Pref = UserPreferences.Default;
         private List<QB.QBItem> SongList = new List<QB.QBItem>();
         private string[] QsStrings = [];
@@ -762,9 +763,15 @@ namespace GH_Toolkit_GUI
         private void EnableCompileOnly()
         {
             compile_pak_button.Text = "Compile to Folder";
-            if (CurrentPlatform == CONSOLE_PS2 || CurrentPlatform == CONSOLE_WII || CurrentPlatform == CONSOLE_PC)
+            compile_pak_button.Enabled = true;
+            if (CurrentPlatform == CONSOLE_PC && CurrentGame != GAME_GHWT)
             {
-                compile_pak_button.Text = "Compile Song PAK";
+                compile_pak_button.Text = "Export to SGH";
+            }
+            else if (CurrentPlatform == CONSOLE_PS2 || CurrentPlatform == CONSOLE_WII || CurrentGame == GAME_GHWT)
+            {
+                compile_pak_button.Text = "Disabled";
+                compile_pak_button.Enabled = false;
             }
 
         }
@@ -869,7 +876,7 @@ namespace GH_Toolkit_GUI
                 {
                     throw new Exception("Invalid relative MODS folder path. It escapes the MODS folder.");
                 }
-            }            
+            }
         }
         private void SelectModsSubfolder(object sender, EventArgs e)
         {
@@ -1125,6 +1132,7 @@ namespace GH_Toolkit_GUI
         private void PreCompileCheck()
         {
             ConsoleStringCheck();
+            AuthorCheck();
             string game = CurrentGame;
             if ((game == "GH3" || game == "GHA") && CurrentPlatform == "PC")
             {
@@ -1163,6 +1171,16 @@ namespace GH_Toolkit_GUI
                 CreateChecksum();
             }
             ConsoleCompile = Path.Combine(compile_input.Text, "Console");
+        }
+        private void AuthorCheck()
+        {
+            var stripXML = new Regex(@"<[^>]+>"); // For Clone Hero
+            if (chart_author_input.Text == "")
+            {
+                chart_author_input.Text = Environment.UserName;
+            }
+            chart_author_input.Text = stripXML.Replace(chart_author_input.Text, "");
+
         }
         private void CreateConsoleFolder()
         {
@@ -1243,7 +1261,7 @@ namespace GH_Toolkit_GUI
             {
                 return $"dlc{ConsoleChecksum}";
             }
-            else if (alwaysName || !Pref.DlcName)
+            else if (alwaysName || !Pref.DlcName || isAudioCompile)
             {
                 return song_checksum.Text;
             }
@@ -1767,7 +1785,8 @@ namespace GH_Toolkit_GUI
         private void AddToPCSetlist()
         {
             var songListEntry = GenerateGh3SongListEntry();
-            var (pakData, pabData) = AddToDownloadList(GetGh3PakFile(CurrentGame), CurrentPlatform, [songListEntry]);
+            var gameFolder = GetCustomsPak(CurrentGame);
+            var (pakData, pabData) = AddToDownloadList(gameFolder, CurrentPlatform, [songListEntry], game: CurrentGame);
             OverwriteGh3Pak(pakData, pabData!, CurrentGame);
         }
         private void CreateConsoleFilesGh3()
@@ -1789,7 +1808,7 @@ namespace GH_Toolkit_GUI
         {
 
             var dummyText = "\\\\Dummy file - just here to fix dependencies.\r\n";
-            var hopoOverride = (float)NsHopoVal.Value;
+            var hopoOverride = midi_file_input_gh3.Text.ToLower().EndsWith(".q") ? (float)NsHopoVal.Value : 500f;
             Metadata = PackageMetadata(hopoValOverride: hopoOverride);
             var songListEntry = Metadata.GenerateGh3SongListEntry(CurrentGame, CurrentPlatform);
             var setlistItem = new QB.QBItem((string)songListEntry["checksum"], songListEntry);
@@ -1945,7 +1964,7 @@ namespace GH_Toolkit_GUI
 
                     await compiler.GH3AudioCompile();
                     var (fsbOut, datOut) = compiler.getFsbDat();
-                    if (isExport || Pref.CompileToFolder || !Pref.DlcName)
+                    if (isExport || ((Pref.CompileToFolder || !Pref.DlcName) && CurrentPlatform != "PC"))
                     {
                         File.Move(fsbOut, Path.Combine(ConsoleCompile, $"{fileName}.fsb"), true);
                         File.Move(datOut, Path.Combine(ConsoleCompile, $"{fileName}.dat"), true);
@@ -2104,6 +2123,10 @@ namespace GH_Toolkit_GUI
         {
             compile_all_button.Enabled = state;
             compile_pak_button.Enabled = state;
+            if (state)
+            {
+                EnableCompileOnly();
+            }
         }
         private async Task CompileAll()
         {
@@ -2197,8 +2220,33 @@ namespace GH_Toolkit_GUI
         }
         private void PreChecks()
         {
-            SaveProject();
             PreCompileCheck();
+            DuplicateCheck();
+            SaveProject();
+        }
+        private void DuplicateCheck()
+        {
+            var duplicateSet = GH_Toolkit_Core.Other.ForbiddenChecksums.GetForbiddenChecksums(CurrentGame);
+            if (duplicateSet.Contains(song_checksum.Text.ToLower()))
+            {
+                if (Pref.ChecksumWarning == 0)
+                {
+                    var option = MessageBox.Show($"Warning: The song checksum \"{song_checksum.Text}\" is restricted.\n\n" +
+                    "Press OK to continue, the checksum will be modified to prevent overwriting on-disc/included songs.\n\n" +
+                    "Alternatively, press Cancel to modify the checksum yourself.\n\n" +
+                    "(This warning can be silenced in Settings menu.)",
+                    "Duplicate Checksum Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    if (option == DialogResult.Cancel)
+                    {
+                        throw new OperationCanceledException("Compilation cancelled by user due to duplicate checksum.");
+                    }
+                }
+                else if (Pref.ChecksumWarning == 2)
+                {
+                    throw new InvalidOperationException($"The song checksum \"{song_checksum.Text}\" is restricted and cannot be used.");
+                }
+                song_checksum.Text = "custom_" + song_checksum.Text;
+            }
         }
         private bool CompilePakGh3()
         {
@@ -2419,7 +2467,7 @@ namespace GH_Toolkit_GUI
 
             if (CurrentPlatform == CONSOLE_PS2 || CurrentPlatform == CONSOLE_WII || CurrentPlatform == CONSOLE_PC)
             {
-                await TaskWithFilePathUpdates(CompilePaksAsync);
+                await exportSongArchive();
             }
             else
             {
@@ -2648,7 +2696,7 @@ namespace GH_Toolkit_GUI
             }
         }
 
-        private async void exportSongArchiveToolStripMenuItem_Click(object sender, EventArgs e)
+        private async Task exportSongArchive()
         {
             if (CurrentGame != GAME_GH3)
             {
@@ -2660,10 +2708,16 @@ namespace GH_Toolkit_GUI
             isExport = false;
         }
 
+        private async void exportSongArchiveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await exportSongArchive();
+        }
+
         private async void compileAudioToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveProject();
             ConsoleStringCheck();
+            Pref.CompileToFolder = true;
             isAudioCompile = true;
             if (CurrentGame == GAME_GH3 || CurrentGame == GAME_GHA)
             {
@@ -2678,7 +2732,7 @@ namespace GH_Toolkit_GUI
                 await CompileGhwtAudio(true);
             }
             isAudioCompile = false;
+            Pref.CompileToFolder = false;
         }
-
     }
 }

@@ -2,9 +2,11 @@
 using IniParser.Model;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using static GH_Toolkit_Core.QB.QBConstants;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GH_Toolkit_GUI
 {
@@ -711,18 +713,34 @@ namespace GH_Toolkit_GUI
         }
         private void LoadProject(string filePath)
         {
+
             if (File.Exists(filePath))
             {
                 isLoading = true;
-                string json = File.ReadAllText(filePath);
-                SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
-                if (Directory.GetParent(filePath).Name != "Templates")
+
+                var data = GetSaveData(filePath);
+
+                if (data != null)
                 {
-                    data.ghprojFromLoad = filePath;
+                    if (Directory.GetParent(filePath).Name != "Templates")
+                    {
+                        data.ghprojFromLoad = filePath;
+                    }
+                    LoadSaveData(data);
                 }
-                LoadSaveData(data);
+
                 isLoading = false;
             }
+        }
+        private SaveData? GetSaveData(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
+                return data;
+            }
+            return null;
         }
         private void LoadFromChFolder(string folderPath)
         {
@@ -820,7 +838,14 @@ namespace GH_Toolkit_GUI
             album_input.Text = songData.Album ?? string.Empty;
 
             if (songData.Year.HasValue)
-                year_input.Value = songData.Year.Value;
+                try
+                {
+                    year_input.Value = songData.Year.Value;
+                }
+                catch
+                {
+                    year_input.Value = year_input.Minimum;
+                }
 
             if (songData.BandTier.HasValue)
                 bandTierValue.Value = songData.BandTier.Value;
