@@ -25,43 +25,65 @@ namespace GH_Toolkit_GUI
         {
             string backupLocation = Path.Combine(ExeDirectory, "Backups", game);
             string qbPakLocation = Path.Combine(backupLocation, "qb");
-            if (!File.Exists(qbPakLocation + DOT_PAK_XEN))
-            {
-                var regLookup = new RegistryLookup();
-                string regFolder = game == "GH3" ? "Guitar Hero III" : "Guitar Hero Aerosmith";
-                string regPath = $@"SOFTWARE\WOW6432Node\Aspyr\{regFolder}";
-                string regValue = "Path";
-                string ghPath = regLookup.GetRegistryValue(regPath, regValue);
+            var regLookup = new RegistryLookup();
+            string regFolder = game == "GH3" ? "Guitar Hero III" : "Guitar Hero Aerosmith";
+            string ghPath = GetGh3Folder(game);
 
-                try
+            bool pathChanged = false;
+
+            try
+            {
+                // Check if ghPath is null or an empty string
+                if (string.IsNullOrEmpty(ghPath))
                 {
-                    // Check if ghPath is null or an empty string
-                    if (string.IsNullOrEmpty(ghPath))
+                    // Call the method that pops up a window asking for the game path
+                    ghPath = AskForGamePath();
+                    pathChanged = true;
+
+                }
+                while (true)
+                {
+                    string exeName = game == GAME_GH3 ? "GH3" : "Guitar Hero Aerosmith";
+                    string ghExePath = Path.Combine(ghPath, $"{exeName}.exe");
+                    if (!File.Exists(ghExePath))
                     {
-                        // Call the method that pops up a window asking for the game path
-                        ghPath = AskForGamePath();
-                        string exeName = game == GAME_GH3 ? "GH3" : "Guitar Hero Aerosmith";
-                        string ghExePath = Path.Combine(ghPath, $"{exeName}.exe");
-                        if (!File.Exists(ghExePath))
+                        MessageBox.Show($"The game executable was not found in the selected path. Please select the correct {regFolder} game folder.", "Game Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        try
                         {
-                            throw new Exception($"The game executable was not found at the specified path: {ghExePath}");
+                            ghPath = AskForGamePath();
+                            pathChanged = true;
+                        }
+                        catch
+                        {
+                            throw;
                         }
                     }
-                }
-                catch (OperationCanceledException)
-                {
-                    MessageBox.Show($"{regFolder}'s game path is required to proceed.\n\nCancelling compilation.", "Path Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"An error occurred while trying to get the game path.\n\n{ex.Message}\n\nCancelling compilation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    throw;
+                    else
+                    {
+                        break; // Valid path found, exit the loop
+                    }
                 }
 
+            }
+            catch (OperationCanceledException)
+            {
+                MessageBox.Show($"{regFolder}'s game path is required to proceed.\n\nCancelling compilation.", "Path Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while trying to get the game path.\n\n{ex.Message}\n\nCancelling compilation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
+            }
+
+            string ghQbPakPath = Path.Combine(ghPath, PAKPath, "qb.pak.xen");
+            string ghQbPabPath = Path.Combine(ghPath, PAKPath, "qb.pab.xen");
+            bool backedUp = false;
+
+            if (!File.Exists(qbPakLocation + DOT_PAK_XEN))
+            {
                 Directory.CreateDirectory(backupLocation);
-                string ghQbPakPath = Path.Combine(ghPath, PAKPath, "qb.pak.xen");
-                string ghQbPabPath = Path.Combine(ghPath, PAKPath, "qb.pab.xen");
+
                 try
                 {
                     File.Copy(ghQbPakPath, qbPakLocation + DOT_PAK_XEN);
@@ -72,7 +94,17 @@ namespace GH_Toolkit_GUI
                     MessageBox.Show($"An error occurred while trying to backup {regFolder}'s QB.PAK file.\n\n{ex.Message}\n\nCancelling compilation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     throw;
                 }
+                backedUp = true;
+                MessageBox.Show($"A backup of {regFolder}'s QB file has been created.\nIt can be copied back to your GH folder at any time in the settings menu.", "Backup Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
 
+            if (backedUp)
+            {
+                ReplaceGh3PakFiles(game, "PC");
+            }
+
+            if (pathChanged)
+            {
                 if (game == "GH3")
                 {
                     UpdateGh3FilePreference(ghQbPakPath, ghQbPabPath, ghPath);
@@ -81,10 +113,8 @@ namespace GH_Toolkit_GUI
                 {
                     UpdateGhaFilePreference(ghQbPakPath, ghQbPabPath, ghPath);
                 }
-                ReplaceGh3PakFiles(game, "PC");
-
-                MessageBox.Show($"A backup of {regFolder}'s QB file has been created.\nIt can be copied back to your GH folder at any time in the settings menu.", "Backup Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
         }
         private static void UpdateGh3FilePreference(string pakPath, string pabPath, string folderPath)
         {
@@ -122,12 +152,29 @@ namespace GH_Toolkit_GUI
                 return UserPreferences.Default.GhaFolderPath;
             }
         }
+        public static string GetCustomsPak(string game)
+        {
+            return game == GAME_GH3 ? Path.Combine(GetGh3Folder(game), "DATA", "customs.pak.xen") : GetGh3PakFile(game);
+        }
         public static void OverwriteGh3Pak(byte[] pakData, byte[] pabData, string game)
         {
-            OverwriteSplitPak(GetGh3PakFile(game), pakData, pabData, DOTXEN);
+            string pak = GetCustomsPak(game);
+            if (game == GAME_GH3)
+            {
+                OverwritePak(pak, pakData, DOTXEN);
+            }
+            else
+            {
+                OverwriteSplitPak(pak, pakData, pabData, DOTXEN);
+            }
+               
         }
         public static void ReplaceGh3PakFiles(string game, string platform)
         {
+            if (game == GAME_GH3)
+            {
+                return;
+            }
             string qbPakLocation = GetGh3PakFile(game);
             // Might make this use the backup instead in the future...
             string replaceLocation = Path.Combine(ExeDirectory, "Replacements", platform, game, "QB");
