@@ -1279,24 +1279,31 @@ namespace GH_Toolkit_GUI
 
             bool gh3Plus = Pref.Gh3Plus && CurrentGame == GAME_GH3 && CurrentPlatform == "PC";
 
-            var (pakFile, doubleKick, _) = PAK.CreateSongPackage(
+            var compiler = new SongPakCompiler(
                 midiPath: midi_file_input_gh3.Text,
                 savePath: compile_input.Text,
                 songName: checksum,
                 game: CurrentGame,
-                gameConsole: CurrentPlatform,
-                hopoThreshold: (int)HmxHopoVal.Value,
-                skaPath: ska_files_input_gh3.Text,
-                perfOverride: perf_override_input_gh3.Text,
-                songScripts: song_script_input_gh3.Text,
-                skaSource: GetSkaSourceGh3(),
-                venueSource: venue,
-                rhythmTrack: p2_rhythm_check.Checked,
-                overrideBeat: use_beat_check.Checked,
-                hopoType: hopo_mode_select.SelectedIndex,
-                isSteven: vocal_gender_select_gh3.Text == "Steven Tyler",
-                gender: vocal_gender_select_gh3.Text,
-                gh3Plus: gh3Plus);
+                gameConsole: CurrentPlatform
+)
+            {
+                HopoThreshold = (int)HmxHopoVal.Value,
+                SkaPath = ska_files_input_gh3.Text,
+                PerfOverride = perf_override_input_gh3.Text,
+                SongScripts = song_script_input_gh3.Text,
+                SkaSource = GetSkaSourceGh3(),
+                VenueSource = venue,
+                RhythmTrack = p2_rhythm_check.Checked,
+                OverrideBeat = use_beat_check.Checked,
+                HopoType = hopo_mode_select.SelectedIndex,
+                IsSteven = vocal_gender_select_gh3.Text == "Steven Tyler",
+                Gender = vocal_gender_select_gh3.Text,
+                Gh3Plus = gh3Plus
+            };
+
+            compiler.Build();
+
+            var (pakFile, doubleKick, _) = compiler.GetResults();
 
             if (isExport)
             {
@@ -1362,24 +1369,34 @@ namespace GH_Toolkit_GUI
             };
 
             string venue = GetVenue(venueSource.SelectedIndex);
-            var (pakFile, doubleKick, pakFileExPlus) = PAK.CreateSongPackage(
+
+            var compiler = new SongPakCompiler(
                 midiPath: midiFileInput.Text,
                 savePath: compile_input.Text,
                 songName: song_checksum.Text,
                 game: CurrentGame,
-                gameConsole: CurrentPlatform,
-                hopoThreshold: (int)HmxHopoVal.Value,
-                skaPath: skaFilesInput.Text,
-                perfOverride: perfOverrideInput.Text,
-                songScripts: songScriptInput.Text,
-                skaSource: GetSkaSourceGhwt(),
-                venueSource: venue,
-                overrideBeat: use_beat_check.Checked,
-                hopoType: hopo_mode_select.SelectedIndex,
-                easyOpens: easyOpenCheckbox.Checked,
-                diffs: diffs);
+                gameConsole: CurrentPlatform
+)
+            {
+                HopoThreshold = (int)HmxHopoVal.Value,
+                SkaPath = skaFilesInput.Text,
+                PerfOverride = perfOverrideInput.Text,
+                SongScripts = songScriptInput.Text,
+                SkaSource = GetSkaSourceGhwt(),
+                VenueSource = venue,
 
-            WorldTourDiffs = diffs;
+                OverrideBeat = use_beat_check.Checked,
+                HopoType = hopo_mode_select.SelectedIndex,
+                EasyOpens = easyOpenCheckbox.Checked,
+
+                Diffs = diffs
+            };
+
+            compiler.Build();
+
+            var (pakFile, doubleKick, pakFileExPlus) = compiler.GetResults();
+
+            WorldTourDiffs = compiler.Diffs;
 
             if (pakFileExPlus != null)
             {
@@ -1432,27 +1449,36 @@ namespace GH_Toolkit_GUI
                 {"vocals", (int)vocalsTierValue.Value }
             };
 
-            (PakFilePath, var doubleKick, _) = PAK.CreateSongPackage(
-               midiPath: midiFileInput.Text,
-               savePath: compile_input.Text,
-               songName: GetSongChecksum(),
-               game: CurrentGame,
-               gameConsole: CurrentPlatform,
-               hopoThreshold: (int)HmxHopoVal.Value,
-               skaPath: skaFilesInput.Text,
-               perfOverride: perfOverrideInput.Text,
-               songScripts: songScriptInput.Text,
-               skaSource: GetSkaSourceGhwt(),
-               venueSource: venue,
-               overrideBeat: use_beat_check.Checked,
-               hopoType: hopo_mode_select.SelectedIndex,
-               easyOpens: easyOpenCheckbox.Checked,
-               diffs: diffs);
+            var compiler = new SongPakCompiler(
+                midiPath: midiFileInput.Text,
+                savePath: compile_input.Text,
+                songName: GetSongChecksum(),
+                game: CurrentGame,
+                gameConsole: CurrentPlatform
+            )   
+            {
+                HopoThreshold = (int)HmxHopoVal.Value,
+                SkaPath = skaFilesInput.Text,
+                PerfOverride = perfOverrideInput.Text,
+                SongScripts = songScriptInput.Text,
+                SkaSource = GetSkaSourceGhwt(),
+                VenueSource = venue,
 
-            guitarTierValue.Value = diffs["guitar"];
-            bassTierValue.Value = diffs["bass"];
-            drumsTierValue.Value = diffs["drums"];
-            vocalsTierValue.Value = diffs["vocals"];
+                OverrideBeat = use_beat_check.Checked,
+                HopoType = hopo_mode_select.SelectedIndex,
+                EasyOpens = easyOpenCheckbox.Checked,
+
+                Diffs = diffs
+            };
+
+            compiler.Build();
+
+            (PakFilePath, var doubleKick, _) = compiler.GetResults();
+
+            guitarTierValue.Value = compiler.Diffs["guitar"];
+            bassTierValue.Value = compiler.Diffs["bass"];
+            drumsTierValue.Value = compiler.Diffs["drums"];
+            vocalsTierValue.Value = compiler.Diffs["vocals"];
 
             Metadata = PackageMetadataGhwtPlus(doubleKick);
 
