@@ -94,6 +94,7 @@ namespace GH_Toolkit_GUI
         private bool isExport = false;
         private bool isAudioCompile = false;
         private bool compileExpertPlus = false;
+        private string _effectiveSongName = "";
         private bool remakeAudio = true;
         private UserPreferences Pref = UserPreferences.Default;
         private List<QB.QBItem> SongList = new List<QB.QBItem>();
@@ -1263,7 +1264,7 @@ namespace GH_Toolkit_GUI
             }
             else if (alwaysName || !Pref.DlcName || isAudioCompile)
             {
-                return song_checksum.Text;
+                return _effectiveSongName;
             }
             else
             {
@@ -1302,6 +1303,7 @@ namespace GH_Toolkit_GUI
             };
 
             compiler.Build();
+            _effectiveSongName = compiler.EffectiveSongName;
 
             var (pakFile, doubleKick, _) = compiler.GetResults();
 
@@ -2510,6 +2512,7 @@ namespace GH_Toolkit_GUI
         }
         private async Task TaskWithFilePathUpdates(Func<Task> action)
         {
+            _effectiveSongName = song_checksum.Text;
             SetAllToAbsolute();
             await action();
             SetAllToRelative();
