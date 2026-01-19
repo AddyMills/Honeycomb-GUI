@@ -506,48 +506,57 @@ namespace GH_Toolkit_GUI
         }
         private void LoadSaveData(SaveData data)
         {
+            if (data == null)
+            {
+                return;
+            }
+
             isProgrammaticChange = true;
             ClearListBoxes();
-            // Metadata
-            game_layout.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Text == data.gameSelect).Checked = true;
-            platform_layout.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Text == data.platformSelect).Checked = true;
-            song_checksum.Text = data.songName;
-            chart_author_input.Text = data.chartAuthor;
-            title_input.Text = data.title;
-            artist_input.Text = data.artist;
-            artistTextCustom.Text = data.artistTextCustom;
-            cover_artist_input.Text = data.coverArtist;
-            album_input.Text = data.album;
 
+            // Metadata
+            var gameRadio = game_layout.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Text == data.gameSelect);
+            if (gameRadio != null) gameRadio.Checked = true;
+
+            var platformRadio = platform_layout.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Text == data.platformSelect);
+            if (platformRadio != null) platformRadio.Checked = true;
+
+            song_checksum.Text = data.songName ?? "";
+            chart_author_input.Text = data.chartAuthor ?? "";
+            title_input.Text = data.title ?? "";
+            artist_input.Text = data.artist ?? "";
+            artistTextCustom.Text = data.artistTextCustom ?? "";
+            cover_artist_input.Text = data.coverArtist ?? "";
+            album_input.Text = data.album ?? "";
 
             // GH3 Audio
-            guitar_input_gh3.Text = data.guitarPathGh3;
-            rhythm_input_gh3.Text = data.rhythmPathGh3;
-            if (data.backingPathsGh3 != "")
+            guitar_input_gh3.Text = data.guitarPathGh3 ?? "";
+            rhythm_input_gh3.Text = data.rhythmPathGh3 ?? "";
+            if (!string.IsNullOrEmpty(data.backingPathsGh3))
             {
                 backing_input_gh3.Items.AddRange(data.backingPathsGh3.Split(';'));
             }
-            coop_guitar_input_gh3.Text = data.coopGuitarPath;
-            coop_rhythm_input_gh3.Text = data.coopRhythmPath;
-            if (data.coopBackingPaths != "")
+            coop_guitar_input_gh3.Text = data.coopGuitarPath ?? "";
+            coop_rhythm_input_gh3.Text = data.coopRhythmPath ?? "";
+            if (!string.IsNullOrEmpty(data.coopBackingPaths))
             {
                 coop_backing_input_gh3.Items.AddRange(data.coopBackingPaths.Split(';'));
             }
-            crowd_input_gh3.Text = data.crowdPathGh3;
-            preview_audio_input_gh3.Text = data.previewAudioPathGh3;
+            crowd_input_gh3.Text = data.crowdPathGh3 ?? "";
+            preview_audio_input_gh3.Text = data.previewAudioPathGh3 ?? "";
             previewVolumeGh3.Value = data.previewVolumeGh3;
             gh3_rendered_preview_check.Checked = data.useRenderedPreviewGh3;
 
             // GH3 Song Data
-            midi_file_input_gh3.Text = data.midiPathGh3;
-            perf_override_input_gh3.Text = data.perfPathGh3;
-            ska_files_input_gh3.Text = data.skaPathGh3;
-            song_script_input_gh3.Text = data.songScriptPathGh3;
+            midi_file_input_gh3.Text = data.midiPathGh3 ?? "";
+            perf_override_input_gh3.Text = data.perfPathGh3 ?? "";
+            ska_files_input_gh3.Text = data.skaPathGh3 ?? "";
+            song_script_input_gh3.Text = data.songScriptPathGh3 ?? "";
 
             // Other Settings
-            project_input.Text = data.ghprojFromLoad;
+            project_input.Text = data.ghprojFromLoad ?? "";
             compile_input.Text = "";
-            if (Directory.Exists(data.compilePath))
+            if (!string.IsNullOrEmpty(data.compilePath) && Directory.Exists(data.compilePath))
             {
                 compile_input.Text = data.compilePath;
             }
@@ -582,43 +591,45 @@ namespace GH_Toolkit_GUI
             gh3_set_end.Checked = data.setEnd;
 
             // GHWT Audio
-            kickInput.Text = data.kickPath;
-            snareInput.Text = data.snarePath;
-            cymbalsInput.Text = data.cymbalsPath;
-            tomsInput.Text = data.tomsPath;
-            guitarInput.Text = data.guitarPath;
-            bassInput.Text = data.bassPath;
-            vocalsInput.Text = data.vocalsPath;
-            if (data.backingPaths != "")
+            kickInput.Text = data.kickPath ?? "";
+            snareInput.Text = data.snarePath ?? "";
+            cymbalsInput.Text = data.cymbalsPath ?? "";
+            tomsInput.Text = data.tomsPath ?? "";
+            guitarInput.Text = data.guitarPath ?? "";
+            bassInput.Text = data.bassPath ?? "";
+            vocalsInput.Text = data.vocalsPath ?? "";
+            if (!string.IsNullOrEmpty(data.backingPaths))
             {
                 backingInput.Items.AddRange(data.backingPaths.Split(';'));
             }
-            crowdInput.Text = data.crowdPath;
-            previewInput.Text = data.previewAudioPath;
+            crowdInput.Text = data.crowdPath ?? "";
+            previewInput.Text = data.previewAudioPath ?? "";
             previewVolume.Value = data.previewVolume;
             renderedPreviewCheck.Checked = data.useRenderedPreview;
 
             // Song Data
-            midiFileInput.Text = data.midiPath;
+            midiFileInput.Text = data.midiPath ?? "";
             easyOpenCheckbox.Checked = data.easyOpen;
-            perfOverrideInput.Text = data.perfPath;
-            skaFilesInput.Text = data.skaPath;
-            gh3SkaFilesInput.Text = data.lipsyncPath;
-            songScriptInput.Text = data.songScriptPath;
+            perfOverrideInput.Text = data.perfPath ?? "";
+            skaFilesInput.Text = data.skaPath ?? "";
+            gh3SkaFilesInput.Text = data.lipsyncPath ?? "";
+            songScriptInput.Text = data.songScriptPath ?? "";
             skaFileSource.SelectedIndex = data.skaSource;
             venueSource.SelectedIndex = data.venueSource;
             countoffSelect.SelectedIndex = data.countoff;
-            gameDrumKits["GHWT"] = data.ghwtDrumkit;
-            gameDrumKits["GH5"] = data.gh5Drumkit;
-            gameDrumKits["GHWoR"] = data.ghworDrumkit;
-            try
+            gameDrumKits["GHWT"] = data.ghwtDrumkit ?? "Modern Rock";
+            gameDrumKits["GH5"] = data.gh5Drumkit ?? "Modern Rock";
+            gameDrumKits["GHWoR"] = data.ghworDrumkit ?? "Modern Rock";
+            
+            if (gameDrumKits.ContainsKey(CurrentGame))
             {
-                drumKitSelect.SelectedItem = gameDrumKits[CurrentGame];
+                var drumKitValue = gameDrumKits[CurrentGame];
+                if (drumKitSelect.Items.Contains(drumKitValue))
+                {
+                    drumKitSelect.SelectedItem = drumKitValue;
+                }
             }
-            catch
-            {
 
-            }
             vocalGenderSelect.SelectedIndex = data.vocalGender;
             vocalScrollSpeed.Value = data.vocalScrollSpeed;
             vocalTuningCents.Value = data.vocalTuningCents;
@@ -628,14 +639,14 @@ namespace GH_Toolkit_GUI
             bassMicCheck.Checked = data.bassMic;
 
             // WTDE Settings
-            gameIconInput.Text = data.gameIcon;
-            gameCategoryInput.Text = data.gameCategory;
-            bandInput.Text = data.bandWtde;
-            modsSubfolderInput.Text = data.modsSubfolder;
-            gSkeletonSelect.Text = data.gSkeleton;
-            bSkeletonSelect.Text = data.bSkeleton;
-            dSkeletonSelect.Text = data.dSkeleton;
-            vSkeletonSelect.Text = data.vSkeleton;
+            gameIconInput.Text = data.gameIcon ?? "";
+            gameCategoryInput.Text = data.gameCategory ?? "";
+            bandInput.Text = data.bandWtde ?? "";
+            modsSubfolderInput.Text = data.modsSubfolder ?? "";
+            gSkeletonSelect.Text = data.gSkeleton ?? "Default";
+            bSkeletonSelect.Text = data.bSkeleton ?? "Default";
+            dSkeletonSelect.Text = data.dSkeleton ?? "Default";
+            vSkeletonSelect.Text = data.vSkeleton ?? "Default";
             useNewClipsCheck.Checked = data.useNewClips;
             modernStrobesCheck.Checked = data.modernStrobes;
             previewStartTime = data.previewStart;
@@ -645,8 +656,6 @@ namespace GH_Toolkit_GUI
             careerSortIndexD.Value = data.drumsCareerTier;
             careerSortIndexV.Value = data.vocalsCareerTier;
             careerSortIndexA.Value = data.bandCareerTier;
-            UpdatePreviewFields(); // This needs to be changed. Currently broken
-            isProgrammaticChange = false;
 
             // WoR Tiers
             bandTierValue.Value = data.bandTier;
@@ -654,6 +663,10 @@ namespace GH_Toolkit_GUI
             bassTierValue.Value = data.bassTier;
             drumsTierValue.Value = data.drumsTier;
             vocalsTierValue.Value = data.vocalsTier;
+
+            UpdatePreviewFields();
+            
+            isProgrammaticChange = false;
 
             SetAll();
         }
