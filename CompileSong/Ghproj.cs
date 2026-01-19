@@ -102,13 +102,13 @@ namespace GH_Toolkit_GUI
             [DefaultValue("")]
             public string modsSubfolder { get; set; } = "";
             [DefaultValue("Default")]
-            public string gSkeleton { get; set; } = "";
+            public string gSkeleton { get; set; } = "Default";
             [DefaultValue("Default")]
-            public string bSkeleton { get; set; } = "";
+            public string bSkeleton { get; set; } = "Default";
             [DefaultValue("Default")]
-            public string dSkeleton { get; set; } = "";
+            public string dSkeleton { get; set; } = "Default";
             [DefaultValue("Default")]
-            public string vSkeleton { get; set; } = "";
+            public string vSkeleton { get; set; } = "Default";
             [DefaultValue("Modern Rock")]
             public string ghwtDrumkit { get; set; } = "Modern Rock";
             [DefaultValue("Modern Rock")]
@@ -175,7 +175,7 @@ namespace GH_Toolkit_GUI
             public decimal vocalScrollSpeed { get; set; } = 1;
             public decimal vocalTuningCents { get; set; } = 0;
             [DefaultValue(0.5)]
-            public decimal sustainThreshold { get; set; }
+            public decimal sustainThreshold { get; set; } = 0.5m;
             public decimal overallVolume { get; set; } = 0;
             [DefaultValue(-7.0)]
             public decimal previewVolume { get; set; } = -7m;
@@ -737,7 +737,12 @@ namespace GH_Toolkit_GUI
             if (File.Exists(filePath))
             {
                 string json = File.ReadAllText(filePath);
-                SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
+                var settings = new JsonSerializerSettings
+                {
+                    DefaultValueHandling = DefaultValueHandling.Populate,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+                SaveData data = JsonConvert.DeserializeObject<SaveData>(json, settings);
                 return data;
             }
             return null;
