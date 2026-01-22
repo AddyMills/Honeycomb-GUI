@@ -18,6 +18,7 @@ using static GH_Toolkit_Exceptions.Exceptions;
 using GH_Toolkit_Core.PS360;
 using GH_Toolkit_GUI.Properties;
 using System.Drawing.Drawing2D;
+using GH_Toolkit_Core.Other;
 
 namespace GH_Toolkit_GUI
 {
@@ -128,12 +129,14 @@ namespace GH_Toolkit_GUI
                 DeleteTempFiles(compilePath);
 
                 var failedSongs = new List<string>();
+                var badNames = ForbiddenChecksums.GetForbiddenChecksums(game);
 
                 foreach (string song in songList.CheckedItems)
                 {
                     string songName = song.Split(' ')[0];
                     try
                     {
+                        if (badNames.Contains(songName)) throw new Exception($"Song short name '{songName}' is not allowed due to being part of the main game.");
                         toImport.Add(MasterList[songName]);
                     }
                     catch (Exception e)
