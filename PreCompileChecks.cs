@@ -21,6 +21,7 @@ namespace GH_Toolkit_GUI
         private const string RESOURCES_FOLDER = "Resources";
         private const string QB_FOLDER = "QB";
         private const string CUSTOMS_PAK_FILENAME = "customs.pak.xen";
+        private const string PATCH_PAK_FILENAME = "patch.pak.xen";
         private const string QB_PAK_FILENAME = "qb";
         private const string GH3_EXE_NAME = "GH3";
         private const string GHA_EXE_NAME = "Guitar Hero Aerosmith";
@@ -39,7 +40,7 @@ namespace GH_Toolkit_GUI
         public static string SONGSPath => Path.Combine(DATA_PATH, SONGS_FOLDER);
 
         private static UserPreferences Preferences => UserPreferences.Default;
-        public static void Gh3PcCheck(string game)
+        public static void Gh3PcCheck(string game, bool suppressMessages = false)
         {
             string backupLocation = Path.Combine(BackupsPath, game);
             string qbPakBackupLocation = Path.Combine(backupLocation, QB_FOLDER);
@@ -50,7 +51,7 @@ namespace GH_Toolkit_GUI
 
             if (game == GAME_GH3)
             {
-                CopyResourceFilesIfNeeded(ghPath, gameName);
+                CopyResourceFilesIfNeeded(ghPath, gameName, suppressMessages);
             }
 
             string ghQbPakPath = Path.Combine(ghPath, PAKPath, $"{QB_PAK_FILENAME}.pak.xen");
@@ -233,10 +234,15 @@ namespace GH_Toolkit_GUI
             return ghPath;
         }
 
-        private static void CopyResourceFilesIfNeeded(string ghPath, string gameName)
+        private static void CopyResourceFilesIfNeeded(string ghPath, string gameName, bool forceCopy = false)
         {
+            string patchPakPath = Path.Combine(ghPath, DATA_PATH, PATCH_PAK_FILENAME);
+            if (!File.Exists(patchPakPath))
+            {
+                throw new FileNotFoundException($"Required file {PATCH_PAK_FILENAME} not found in {gameName}'s DATA folder.\n\nPlease re-download BetterGH3.");
+            }
             string customsPakPath = Path.Combine(ghPath, DATA_PATH, CUSTOMS_PAK_FILENAME);
-            if (File.Exists(customsPakPath)) return;
+            if (File.Exists(customsPakPath) && !forceCopy) return;
 
             try
             {
@@ -252,11 +258,12 @@ namespace GH_Toolkit_GUI
                     Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
                     File.Copy(file, destPath, overwrite: true);
                 }
+                if (forceCopy) return;
                 MessageBox.Show($"Better {gameName} has been updated to allow customs online!\n\nSave files will also no longer break when adding new songs.", "BetterGH3 Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while copying resource files to {gameName}'s DATA folder.\n\n{ex.Message}\n\nCancelling compilation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"An error occurred while copying update files to {gameName}'s DATA folder.\n\n{ex.Message}\n\nCancelling compilation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw;
             }
         }
