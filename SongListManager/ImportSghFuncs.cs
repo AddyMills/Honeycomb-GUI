@@ -10,6 +10,7 @@ using static GH_Toolkit_GUI.PreCompileChecks;
 using GH_Toolkit_Core.PAK;
 using static GH_Toolkit_Exceptions.Exceptions;
 using GH_Toolkit_Core.PS360;
+using GH_Toolkit_Core.Other;
 
 namespace GH_Toolkit_GUI
 {
@@ -82,9 +83,10 @@ namespace GH_Toolkit_GUI
                 MessageBox.Show("No songs loaded!\n\nPlease import an SGH file first.");
                 return;
             }
-            var toImport = new List<QBStruct.QBStructData>();
+            var toImport = new List<QBStructData>();
             string compilePath;
             string game = GAME_GH3;
+            var forbiddenSongs = ForbiddenChecksums.GetForbiddenChecksums(game);
             try
             {
                 compilePath = SghFolder;
@@ -111,6 +113,10 @@ namespace GH_Toolkit_GUI
                     string songName = song.Split(' ')[0];
                     try
                     {
+                        if (forbiddenSongs.Contains(songName))
+                        {
+                            throw new Exception($"Song '{songName}' has a forbidden checksum and cannot be imported.");
+                        }
                         toImport.Add(MasterList[songName]);
                     }
                     catch (Exception e)
