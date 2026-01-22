@@ -28,7 +28,7 @@ namespace GH_Toolkit_Exceptions
                 var line = targetFrame.GetFileLineNumber();
                 var column = targetFrame.GetFileColumnNumber();
 
-                string errorMessage = $"Exception: {ex.Message}\nMethod: {methodName}\nFile: {fileName}\nLine: {line}, Column: {column}";
+                string errorMessage = $"Exception:\n\n{ex.Message}\n\nMethod: {methodName}\nFile: {fileName}\nLine: {line}, Column: {column}";
                 MessageBox.Show(errorMessage, errorInfo, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
