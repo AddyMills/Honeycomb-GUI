@@ -53,6 +53,9 @@
             tableLayoutPanel3 = new TableLayoutPanel();
             consoleLabel = new Label();
             consoleSelect = new ComboBox();
+            tabPage1 = new TabPage();
+            tableLayoutPanel6 = new TableLayoutPanel();
+            restoreSetlistButton = new Button();
             tabControl1.SuspendLayout();
             importTab.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -65,6 +68,8 @@
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tableLayoutPanel6.SuspendLayout();
             SuspendLayout();
             // 
             // songList
@@ -82,6 +87,7 @@
             tabControl1.Controls.Add(importTab);
             tabControl1.Controls.Add(exportTab);
             tabControl1.Controls.Add(deleteTab);
+            tabControl1.Controls.Add(tabPage1);
             tabControl1.Location = new Point(3, 190);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
@@ -390,14 +396,48 @@
             consoleSelect.TabIndex = 1;
             consoleSelect.SelectedIndexChanged += consoleSelect_SelectedIndexChanged;
             // 
-            // SongListManagerNew
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(tableLayoutPanel6);
+            tabPage1.Location = new Point(4, 24);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(557, 155);
+            tabPage1.TabIndex = 3;
+            tabPage1.Text = "Restore";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel6
+            // 
+            tableLayoutPanel6.ColumnCount = 1;
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel6.Controls.Add(restoreSetlistButton, 0, 0);
+            tableLayoutPanel6.Location = new Point(6, 6);
+            tableLayoutPanel6.Name = "tableLayoutPanel6";
+            tableLayoutPanel6.RowCount = 1;
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel6.Size = new Size(545, 146);
+            tableLayoutPanel6.TabIndex = 0;
+            // 
+            // restoreSetlistButton
+            // 
+            restoreSetlistButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            restoreSetlistButton.Location = new Point(3, 3);
+            restoreSetlistButton.Name = "restoreSetlistButton";
+            restoreSetlistButton.Size = new Size(539, 140);
+            restoreSetlistButton.TabIndex = 0;
+            restoreSetlistButton.Text = "Click Here to Restore the Original DLC Setlist (Removes all customs)";
+            restoreSetlistButton.UseVisualStyleBackColor = true;
+            restoreSetlistButton.Click += restoreSetlistButton_Click;
+            // 
+            // SongListManager
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(595, 608);
             Controls.Add(tableLayoutPanel2);
             Controls.Add(songList);
-            Name = "SongListManagerNew";
+            Name = "SongListManager";
             Text = "Song List Manager";
             tabControl1.ResumeLayout(false);
             importTab.ResumeLayout(false);
@@ -413,6 +453,8 @@
             tableLayoutPanel4.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
+            tabPage1.ResumeLayout(false);
+            tableLayoutPanel6.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -445,5 +487,8 @@
         private RadioButton ghaRadio;
         private Button loadSetlist;
         private Button deleteSelected;
+        private TabPage tabPage1;
+        private TableLayoutPanel tableLayoutPanel6;
+        private Button restoreSetlistButton;
     }
 }

@@ -1,4 +1,5 @@
-﻿using static GH_Toolkit_Core.Methods.CreateForGame;
+﻿using GH_Toolkit_Core.Other;
+using static GH_Toolkit_Core.Methods.CreateForGame;
 using static GH_Toolkit_Core.PAK.PAK;
 using static GH_Toolkit_Core.QB.QB;
 using static GH_Toolkit_Core.QB.QBArray;
@@ -57,6 +58,8 @@ namespace GH_Toolkit_GUI
             var musicFolder = Path.Combine(GetGh3Folder(Game), "DATA", "MUSIC");
             var songsFolder = Path.Combine(GetGh3Folder(Game), "DATA", "SONGS");
 
+            var forbiddenSongs = ForbiddenChecksums.GetForbiddenChecksums(Game);
+
             foreach (string song in songList.CheckedItems)
             {
                 var songName = song.Split(' ')[0];
@@ -73,7 +76,7 @@ namespace GH_Toolkit_GUI
                         break;
                     }
                 }
-                if (Pref.SongManagerDeleteSongs)
+                if (Pref.SongManagerDeleteSongs && !forbiddenSongs.Contains(songName))
                 {
                     var fsbPath = Path.Combine(musicFolder, $"{songName}.fsb.xen");
                     var datPath = Path.Combine(musicFolder, $"{songName}.dat.xen");

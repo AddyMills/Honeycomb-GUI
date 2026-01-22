@@ -48,6 +48,7 @@ namespace GH_Toolkit_GUI
         {
             InitializeComponent();
             gh3Radio.Checked = true;
+            Game = GAME_GH3;
             consoleSelect.SelectedIndex = 0;
         }
         private void SelectAll()
@@ -133,6 +134,18 @@ namespace GH_Toolkit_GUI
         private void deleteSelected_Click(object sender, EventArgs e)
         {
             DeleteSongs();
+        }
+
+        private void restoreSetlistButton_Click(object sender, EventArgs e)
+        {
+            var confirm = MessageBox.Show("Are you sure you want to restore the original DLC setlist? This will remove all custom songs from your setlist.", "Confirm Restore", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.No)
+            {
+                MessageBox.Show("Restore cancelled.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            Gh3PcCheck(Game, true);
+            MessageBox.Show("Original BetterGH3 setlist is now restored.", "Setlist Restored", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void SetExportOptions(bool enabled)
