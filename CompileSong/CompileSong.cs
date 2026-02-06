@@ -244,6 +244,7 @@ namespace GH_Toolkit_GUI
             updatePreviewEndTime();
             DisplayChecksum();
             CheckSustainThreshold();
+            EnableCompileOnly();
         }
         private void DefaultPaths()
         {
@@ -1309,7 +1310,7 @@ namespace GH_Toolkit_GUI
 
             if (isExport)
             {
-                File.Move(pakFile, Path.Combine(ConsoleCompile, $"{checksum}_song.pak"), true);
+                File.Move(pakFile, Path.Combine(ConsoleCompile, $"{_effectiveSongName}_song.pak"), true);
                 var songEntry = GenerateGh3SongListEntry();
                 QB.QBItem songItem = new QB.QBItem((string)songEntry["checksum"], songEntry);
                 var saveQb = Path.Combine(ConsoleCompile, "songs.info");

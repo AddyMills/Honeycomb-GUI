@@ -246,9 +246,9 @@ namespace GH_Toolkit_GUI
 
             try
             {
-                string gameDataPath = Path.Combine(ghPath, DATA_PATH);
+                string gameDataPath = Path.Combine(ghPath);
                 string betterGh3FilesPath = Path.Combine(ResourcePath, BETTERGH3_FOLDER);
-                if (!Directory.Exists(betterGh3FilesPath)) return;
+                if (!Directory.Exists(betterGh3FilesPath)) throw new FileNotFoundException("BetterGH3 update files not found. Please re-download Honeycomb.");
 
                 var betterGh3Files = Directory.GetFiles(betterGh3FilesPath, "*.*", SearchOption.AllDirectories);
                 foreach (string file in betterGh3Files)
