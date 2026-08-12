@@ -1,8 +1,7 @@
 {
   "profiles": {
     "GH-Toolkit-GUI": {
-      "commandName": "Project",
-      "commandLineArgs": "\"D:\\RB\\Songs\\Testing\\Faith No More - From Out Of Nowhere\\McklFromOutOfNowhere.ghproj\""
+      "commandName": "Project"
     }
   }
 }
